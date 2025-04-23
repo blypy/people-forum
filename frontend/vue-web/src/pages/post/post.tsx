@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { ArrowLeft, MessageSquareMore, ChevronDown, ChevronUp } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { Posts, Comments } from '@/types'
@@ -46,7 +46,7 @@ const mockPost: Posts = {
         {
           id: 2,
           parentId: 1,
-          content: '非常感谢您的评论！这是对您的评论的回复。',
+          content: '评论的回复。',
           createdAt: new Date(),
           user: {
             avatar: 'https://github.com/shadcn.png',
@@ -74,13 +74,13 @@ const CommentComponent = ({ comment }: { comment: Comments }) => {
   const [replyContent, setReplyContent] = useState('')
   const [showReplyInput, setShowReplyInput] = useState(false)
 
-  const hasReplies = comment.replies && comment.replies.length > 0
+  const hasReplies = comment.replies && comment.replies.length > 0 //是否用子评论
 
   return (
     <div className="p-4 border-b border-border">
       <div className="flex gap-3">
         <Link to={`/user/${comment.user.id}`}>
-          <Avatar className="h-10 w-10 flex-shrink-0">
+          <Avatar className="size-10">
             <AvatarImage src={comment.user.avatar} alt={comment.user.username} />
             <AvatarFallback>{comment.user.username.slice(0, 2)}</AvatarFallback>
           </Avatar>
@@ -95,14 +95,14 @@ const CommentComponent = ({ comment }: { comment: Comments }) => {
           <p className="mt-1 mb-2">{comment.content}</p>
 
           {/* 回复按钮 */}
-          <div className="flex items-center mt-2 text-muted-foreground space-x-4">
+          <div className="flex items-center text-muted-foreground">
             <Button
               variant="ghost"
               size="sm"
-              className="rounded-full p-0 h-auto hover:text-primary"
+              className="rounded-full h-auto hover:text-primary"
               onClick={() => setShowReplyInput(!showReplyInput)}
             >
-              <MessageCircle className="h-4 w-4 mr-1" />
+              <MessageSquareMore className="size-4 -ml-2" />
               <span className="text-xs">回复</span>
             </Button>
 
@@ -116,12 +116,12 @@ const CommentComponent = ({ comment }: { comment: Comments }) => {
                 <span className="text-xs flex items-center">
                   {showReplies ? (
                     <>
-                      <ChevronUp className="h-4 w-4 mr-1" />
+                      <ChevronUp className="size-4 mr-1" />
                       隐藏回复
                     </>
                   ) : (
                     <>
-                      <ChevronDown className="h-4 w-4 mr-1" />
+                      <ChevronDown className="size-4 mr-1" />
                       查看{comment.replies?.length}条回复
                     </>
                   )}
@@ -134,7 +134,7 @@ const CommentComponent = ({ comment }: { comment: Comments }) => {
           {showReplyInput && (
             <div className="mt-3 pl-2 border-l-2 border-border">
               <div className="flex items-start gap-2">
-                <Avatar className="size-10 flex-shrink-0">
+                <Avatar className="size-10">
                   <AvatarImage src="https://github.com/shadcn.png" alt="当前用户" />
                   <AvatarFallback>ME</AvatarFallback>
                 </Avatar>
@@ -143,7 +143,7 @@ const CommentComponent = ({ comment }: { comment: Comments }) => {
                     type="text"
                     value={replyContent}
                     onChange={e => setReplyContent(e.target.value)}
-                    placeholder={`回复 @${comment.user.handle}`}
+                    placeholder={`回复${comment.user.handle}`}
                     className="w-full border-b border-border py-2 bg-transparent outline-none text-sm"
                   />
                   <div className="flex justify-end mt-2 space-x-2">
@@ -163,11 +163,10 @@ const CommentComponent = ({ comment }: { comment: Comments }) => {
                       className="rounded-full text-xs"
                       disabled={!replyContent.trim()}
                       onClick={() => {
-                        // 这里添加提交回复的逻辑
+                        // 添加提交回复的逻辑
                         console.log(`回复到评论 ${comment.id}: ${replyContent}`)
                         setShowReplyInput(false)
                         setReplyContent('')
-                        // 在实际项目中，这里应该发送请求添加回复
                       }}
                     >
                       回复
@@ -202,13 +201,13 @@ const CommentComponent = ({ comment }: { comment: Comments }) => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="rounded-full p-0 h-auto mt-1 hover:text-primary"
+                      className="rounded-full h-auto mt-1 hover:text-primary"
                       onClick={() => {
                         setShowReplyInput(true)
-                        setReplyContent(`@${reply.user.handle} `)
+                        setReplyContent(`${reply.user.handle} `)
                       }}
                     >
-                      <MessageCircle className="h-3 w-3 mr-1" />
+                      <MessageSquareMore className="size-3 -ml-2" />
                       <span className="text-xs">回复</span>
                     </Button>
                   </div>
@@ -223,7 +222,7 @@ const CommentComponent = ({ comment }: { comment: Comments }) => {
 }
 
 export default function Post() {
-  const { id } = useParams()
+  const { id } = useParams() //帖子的id
   const [post, setPost] = useState(mockPost)
   const [commentContent, setCommentContent] = useState('')
 
@@ -241,7 +240,7 @@ export default function Post() {
   }
 
   return (
-    <div className="w-5xl mx-auto border-x border-border min-h-screen pb-20">
+    <div className="mx-auto border-r border-border min-h-screen pb-20">
       {/* 顶部导航 */}
       <div className="sticky top-0 z-10 bg-background p-4 border-b border-border flex items-center">
         <Link to="/" className="mr-6">
@@ -254,7 +253,7 @@ export default function Post() {
         <div className="flex justify-between items-start">
           <div className="flex gap-3">
             <Link to={`/user/${post.user.id}`}>
-              <Avatar className="h-10 w-10">
+              <Avatar className="size-10">
                 <AvatarImage src={post.user.avatar} alt={post.user.avatar} />
                 <AvatarFallback>{post.user.username.slice(0, 2)}</AvatarFallback>
               </Avatar>
@@ -284,7 +283,7 @@ export default function Post() {
 
       {/* 回复输入框 */}
       <form className="p-4 border-b border-border flex items-start gap-3" onSubmit={handleSubmitComment}>
-        <Avatar className="h-10 w-10">
+        <Avatar className="size-10">
           <AvatarImage src="https://github.com/shadcn.png" alt="当前用户" />
           <AvatarFallback>ME</AvatarFallback>
         </Avatar>

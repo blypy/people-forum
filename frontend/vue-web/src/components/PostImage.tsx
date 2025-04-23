@@ -14,13 +14,18 @@ const PostImage = ({ images }: { images?: string[] }) => {
         >
           {images.map((img, index) => (
             <div key={index} className="overflow-hidden border border-border min-h-[250px]">
-              <img src={img} alt={`图片 ${index + 1}`} className="w-full h-full object-cover" />
+              <img
+                src={img}
+                alt={`图片 ${index + 1}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
             </div>
           ))}
         </div>
       ) : (
         <div className="max-h-[500px]">
-          <img src={images[0]} alt="帖子图片" className="w-full h-full object-cover" />
+          <img src={images[0]} alt="帖子图片" className="w-full h-full object-cover" loading="lazy" />
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
-import { Posts, User } from '@/types'
+import type { Posts, User } from '@/types'
 import { Button } from './ui/button'
-import { Heart, MessageCircle, Share, Bookmark } from 'lucide-react'
+import { Heart, MessageSquare, Share, Bookmark } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -47,7 +47,7 @@ const PostAction = ({ post, currentUser }: PostActionProps) => {
   return (
     <div className="flex justify-between mt-2 text-gray-500">
       <Button className="flex items-center gap-2 hover:text-blue-500 rounded-full" variant="ghost">
-        <MessageCircle className="size-5" />
+        <MessageSquare className="size-5" />
         <span className="text-sm">{post.comments.length}</span>
       </Button>
       <Button

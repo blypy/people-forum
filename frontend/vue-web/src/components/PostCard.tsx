@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { formatDate } from '@/lib/utils'
 import { Link } from 'react-router-dom'
-import { Posts } from '@/types'
+import type { Posts } from '@/types'
 import PostAction from './PostinteractionBar'
 import PostImage from './PostImage'
 
@@ -9,7 +9,7 @@ const PostCard = ({ post }: { post: Posts }) => {
   const { user, content, createdAt, id } = post
 
   return (
-    <div className="w-5xl border-b border-border p-4 hover:bg-secondary/40 transition-colors">
+    <div className="border-b border-r border-border p-4 hover:bg-secondary/40 transition-colors w-full">
       {/* 头像 */}
       <div className="flex gap-3">
         <Avatar className="size-10">

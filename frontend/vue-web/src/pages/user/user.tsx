@@ -3,8 +3,8 @@ import { ArrowLeft, Calendar } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import type { User, Posts } from '@/types'
-import PostCard from '@/components/PostCard'
 import { formatDate } from '@/lib/utils'
+import { Outlet } from 'react-router'
 
 // 模拟用户数据
 const mockUser: User & { bio: string } = {
@@ -55,57 +55,19 @@ const mockPosts: Posts[] = [
   }
 ]
 
-// 模拟喜欢的帖子
-const mockLikedPosts: Posts[] = [
-  {
-    id: 4,
-    content: '探索Web3技术的未来发展趋势...',
-    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    user: {
-      ...mockUser,
-      username: '技术先锋',
-      handle: '@techpioneer',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    comments: [],
-    likes: [{ id: 1 }],
-    favorites: []
-  },
-  {
-    id: 5,
-    content: '人工智能在医疗领域的应用前景广阔！',
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    user: {
-      ...mockUser,
-      username: 'AI研究员',
-      handle: '@airesearcher',
-      avatar: 'https://github.com/shadcn.png'
-    },
-    comments: [],
-    likes: [{ id: 1 }],
-    favorites: []
-  }
-]
-
 export default function User() {
-  const { id } = useParams()
+  const { id } = useParams() //userid
   const [user, setUser] = useState(mockUser)
   const [posts, setPosts] = useState<Posts[]>(mockPosts)
-  const [likedPosts, setLikedPosts] = useState<Posts[]>(mockLikedPosts)
   const [activeTab, setActiveTab] = useState('posts')
 
   useEffect(() => {
-    // 在实际应用中，这里会根据ID获取用户数据
-    console.log(`获取用户ID: ${id}的数据`)
-
-    // 模拟API请求
     setUser(mockUser)
     setPosts(mockPosts)
-    setLikedPosts(mockLikedPosts)
   }, [id])
 
   return (
-    <div className="w-5xl mx-auto border-x border-border min-h-screen">
+    <div className="mx-auto border-r border-border min-h-screen">
       {/* 顶部导航 */}
       <div className="sticky top-0 z-10 bg-background p-4 border-b border-border flex items-center">
         <Link to="/" className="mr-6">
@@ -142,46 +104,29 @@ export default function User() {
           </div>
         </div>
       </div>
-
-      {/* 选项卡 */}
       <div className="border-b border-border">
         <div className="flex">
-          <button
-            className={`flex-1 py-3 px-4 font-medium ${
+          <Link
+            to={''}
+            className={`flex-1 py-3 px-4 font-medium text-center  ${
               activeTab === 'posts' ? 'border-b-2 border-primary' : 'text-muted-foreground'
             }`}
             onClick={() => setActiveTab('posts')}
           >
             帖子
-          </button>
-          <button
-            className={`flex-1 py-3 px-4 font-medium ${
+          </Link>
+          <Link
+            to={'like'}
+            className={`flex-1 py-3 px-4 font-medium text-center ${
               activeTab === 'likes' ? 'border-b-2 border-primary' : 'text-muted-foreground'
             }`}
             onClick={() => setActiveTab('likes')}
           >
             喜欢
-          </button>
+          </Link>
         </div>
       </div>
-
-      {/* 选项卡内容 */}
-      <div>
-        {activeTab === 'posts' && (
-          <div>
-            {posts.map(post => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
-        )}
-        {activeTab === 'likes' && (
-          <div>
-            {likedPosts.map(post => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
-        )}
-      </div>
+      <Outlet />
     </div>
   )
 }

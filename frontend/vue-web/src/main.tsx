@@ -1,8 +1,8 @@
-import { createRoot } from 'react-dom/client'
 import './globals.css'
-import { RouterProvider } from 'react-router-dom'
 import router from './router/index'
+import { createRoot } from 'react-dom/client'
 import { Toaster } from '@/components/ui/sonner'
+import { RouterProvider } from 'react-router'
 import { ThemeProvider } from './components/ui/theme-provider'
 
 createRoot(document.getElementById('root')!).render(

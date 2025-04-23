@@ -1,6 +1,9 @@
+import { Search as SearchIcon } from 'lucide-react'
+import { Input } from '@/components/ui/input'
 import PostCard from '@/components/PostCard'
-import { Posts } from '@/types'
-import { useEffect } from 'react'
+import type { Posts } from '@/types'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
 
 const mockPost: Posts[] = [
   {
@@ -246,20 +249,48 @@ const mockPost: Posts[] = [
   }
 ]
 
-export default function Home() {
-  useEffect(() => {
-    const fetchData = async () => {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      console.log(1)
-    }
-    fetchData()
-  }, [])
+const Search = () => {
+  const [searchParams] = useSearchParams()
+  const query = searchParams.get('q') || ''
+  const navigate = useNavigate()
+  const [input, setInput] = useState(query)
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    navigate(`/search?q=${input}`)
+  }
 
   return (
-    <div>
-      {mockPost?.map(post => (
-        <PostCard post={post} key={post.id} />
-      ))}
+    <div className="flex flex-col h-full bg-background text-foreground">
+      {/* 搜索栏 */}
+      <form
+        className="sticky top-0 p-4 border-r border-b z-10 bg-background flex justify-between items-center"
+        onSubmit={handleSubmit}
+      >
+        <div className="relative flex-1 mr-2">
+          <SearchIcon
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+            size={20}
+          />
+          <Input
+            placeholder="搜索"
+            className="pl-10 h-12 rounded-full bg-muted border-none text-lg"
+            onChange={e => setInput(e.target.value)}
+          />
+        </div>
+      </form>
+
+      {query ? (
+        <div>
+          {mockPost?.map(post => (
+            <PostCard post={post} key={post.id} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center text-2xl pt-52 h-screen border-r">搜索内容</div>
+      )}
     </div>
   )
 }
+
+export default Search

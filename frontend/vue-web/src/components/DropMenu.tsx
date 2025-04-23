@@ -1,6 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { MoreHorizontal } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { Link } from 'react-router-dom'
 
 const DropMenu = () => {
   return (
@@ -17,7 +18,9 @@ const DropMenu = () => {
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem>添加已有账号</DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link to={'/login'}>添加已有账号</Link>
+          </DropdownMenuItem>
           <DropdownMenuItem>退出当前账号</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
