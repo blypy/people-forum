@@ -7,7 +7,7 @@ const DropMenu = () => {
     <div className="mt-auto">
       <DropdownMenu>
         <DropdownMenuTrigger>
-          <div className="flex items-center gap-2 hover:bg-gray-200 active:bg-gray-300 rounded-full py-2 px-4 transition-colors">
+          <div className="flex items-center gap-2 hover:bg-secondary active:bg-secondary/80 rounded-full py-2 px-4 transition-colors">
             <Avatar className="hover:scale-110 transition-transform">
               <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
               <AvatarFallback>CN</AvatarFallback>

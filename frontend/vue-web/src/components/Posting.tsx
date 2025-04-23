@@ -19,14 +19,14 @@ const Posting = () => {
   const [content, setContent] = useState('')
   const [images, setImages] = useState<string[]>([])
 
+  // 最多三张图
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-
-    // 最多三张图
     if (images.length >= 3) {
       toast.error('最多选择三张图')
       return
     }
+
+    const file = e.target.files?.[0]
 
     if (file) {
       // 最大3mb
@@ -46,7 +46,7 @@ const Posting = () => {
     const content = formData.get('content') as string
     console.log(image, content)
 
-    // 这里发请求
+    // 请求
 
     toast.success('发布成功')
     setImages([])
@@ -61,7 +61,7 @@ const Posting = () => {
           <span className="xl:hidden text-2xl">+</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] p-0">
+      <DialogContent className="sm:max-w-[600px] p-0 border-border bg-card text-card-foreground">
         <form action={handleAction}>
           <DialogTitle className="hidden" />
           <DialogDescription className="hidden" />
@@ -72,10 +72,10 @@ const Posting = () => {
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
 
-              <div className="flex-1 w-full">
+              <div>
                 <textarea
                   placeholder="有什么新鲜事?"
-                  className="w-full resize-none outline-none text-xl min-h-20 mt-1"
+                  className="w-full resize-none outline-none text-xl min-h-20 mt-1 bg-transparent"
                   value={content}
                   onChange={e => setContent(e.target.value)}
                   name="content"
@@ -93,7 +93,7 @@ const Posting = () => {
                     )}
                   >
                     {images.map((img, index) => (
-                      <div key={index} className="relative rounded-xl overflow-hidden border h-48">
+                      <div key={index} className="relative rounded-xl overflow-hidden border border-border h-48">
                         <img src={img} className="w-full h-full object-cover" />
                         <Button
                           size="icon"
@@ -109,7 +109,7 @@ const Posting = () => {
               </div>
             </div>
           </DialogHeader>
-          <DialogFooter className="p-4 border-t">
+          <DialogFooter className="p-4 border-t border-border">
             <Button
               variant="ghost"
               size="icon"
@@ -129,7 +129,7 @@ const Posting = () => {
             />
             <Button
               disabled={!content.trim()}
-              className="bg-blue-500 hover:bg-blue-600 rounded-full px-5"
+              className="rounded-full"
               type="submit"
             >
               发帖

@@ -8,6 +8,7 @@ const mockPost: Posts[] = [
     images: ['/src/assets/react.svg'],
     createdAt: new Date(),
     user: {
+      id: 1,
       avatar: 'https://github.com/shadcn.png',
       username: '用户1',
       handle: '@123123'
@@ -20,6 +21,7 @@ const mockPost: Posts[] = [
         content: '评论内容',
         createdAt: new Date(),
         user: {
+          id: 1,
           avatar: 'https://github.com/shadcn.png',
           username: '用户1',
           handle: '@123123'
@@ -31,6 +33,7 @@ const mockPost: Posts[] = [
             content: '评论内容',
             createdAt: new Date(),
             user: {
+              id: 2,
               avatar: 'https://github.com/shadcn.png',
               username: '用户1',
               handle: '@123123'
@@ -42,6 +45,7 @@ const mockPost: Posts[] = [
             content: '评论内容',
             createdAt: new Date(),
             user: {
+              id: 3,
               avatar: 'https://github.com/shadcn.png',
               username: '用户1',
               handle: '@123123'
@@ -54,6 +58,7 @@ const mockPost: Posts[] = [
         content: '评论内容',
         createdAt: new Date(),
         user: {
+          id: 4,
           avatar: 'https://github.com/shadcn.png',
           username: '用户1',
           handle: '@123123'
