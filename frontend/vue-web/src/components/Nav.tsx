@@ -1,8 +1,11 @@
-import { NavLink, Link } from 'react-router-dom'
-import { House, Search, Bookmark, CircleUserRound } from 'lucide-react'
 import DropMenu from './DropMenu'
 import Posting from './Posting'
+import { Button } from './ui/button'
 import { ThemeToggle } from './ui/theme-toggle'
+import { useUserStore } from '@/stores/useCurrentUserStore'
+import { NavLink, Link } from 'react-router-dom'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { House, Search, Bookmark, CircleUserRound, MoreHorizontal } from 'lucide-react'
 
 const nav = [
   {
@@ -23,15 +26,15 @@ const nav = [
   {
     icon: <CircleUserRound />,
     title: '个人资料',
-    link: '/user/1'
+    link: `/user`
   }
 ]
 
 const Nav = () => {
+  const { currentUser } = useUserStore()
   return (
     <nav className="flex flex-col gap-4 xl:w-62 w-22 h-screen p-4 border-r fixed bg-background text-foreground">
       {/* logo */}
-
       <Link to={'/'}>
         <h1>
           <img src="/X.png" alt="logo" className="size-15 object-cover xl:-ml-2 -ml-1" />
@@ -43,7 +46,7 @@ const Nav = () => {
         {nav.map((item, index) => (
           <li key={index}>
             <NavLink
-              to={item.link}
+              to={item.link === '/user' ? `/user/${currentUser?.id}` : item.link}
               className={({ isActive }) =>
                 `flex items-center gap-5 cursor-pointer hover:bg-secondary active:bg-secondary rounded-full py-2 px-4 transition-colors ${
                   isActive && 'font-bold'
@@ -56,15 +59,35 @@ const Nav = () => {
           </li>
         ))}
       </ul>
+
       {/* 发布按钮 */}
       <div className="flex justify-center xl:block">
-        <Posting />
+        <Posting mode={'post'}>
+          <Button className="xl:w-full w-12 h-12 xl:h-auto rounded-full">
+            <span className="hidden xl:inline">发布</span>
+            <span className="xl:hidden text-2xl">+</span>
+          </Button>
+        </Posting>
       </div>
 
       {/* 个人信息 */}
       <div className="flex mt-auto items-center">
-        <DropMenu />
-
+        {currentUser ? (
+          <DropMenu>
+            <div className="flex items-center gap-2 hover:bg-secondary active:bg-secondary/80 rounded-full py-2 px-4 transition-colors">
+              <Avatar className="hover:scale-110 transition-transform">
+                <AvatarImage src={currentUser.avatar} alt="@shadcn" />
+                <AvatarFallback>ME</AvatarFallback>
+              </Avatar>
+              <p className="xl:block hidden">{currentUser.username}</p>
+              <MoreHorizontal className="xl:block hidden text-xl ml-5 self-end" />
+            </div>
+          </DropMenu>
+        ) : (
+          <Link to={'/login'} className="w-full">
+            <Button>登录</Button>
+          </Link>
+        )}
         <ThemeToggle />
       </div>
     </nav>

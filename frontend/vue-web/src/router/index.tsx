@@ -1,17 +1,18 @@
 import { lazy } from 'react'
-import Layout from '@/pages/layout/layout'
 import Login from '@/pages/auth/login'
-import Post from '@/pages/post/post'
 import Register from '@/pages/auth/register'
-import User from '@/pages/user/user'
 import { createBrowserRouter } from 'react-router-dom'
 import { Suspense } from 'react'
 
-import NotFound from '@/components/NotFound'
-import Search from '@/pages/search/search'
+import { NotFound } from '@/components/NotFound'
+import Search from '@/pages/layout/search'
 import Loading from '@/components/Loading'
+
 const Home = lazy(() => import('@/pages/layout/home'))
 const PostList = lazy(() => import('@/components/PostList'))
+const Layout = lazy(() => import('@/pages/layout/layout'))
+const User = lazy(() => import('@/pages/layout/user'))
+const Post = lazy(() => import('@/pages/layout/post'))
 
 const router = createBrowserRouter([
   {
@@ -28,19 +29,18 @@ const router = createBrowserRouter([
       },
       {
         path: '/post/:id',
-        element: <Post />
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Post />
+          </Suspense>
+        )
       },
       {
         path: '/favorite',
         loader: () => {
-          const posts = 'favorite'
-          return posts
+          return 'USER-FAVORITE'
         },
-        element: (
-          <Suspense fallback={<Loading />}>
-            <PostList />
-          </Suspense>
-        )
+        element: <PostList />
       },
       {
         path: '/search',
@@ -48,31 +48,25 @@ const router = createBrowserRouter([
       },
       {
         path: '/user/:id',
-        element: <User />,
+        element: (
+          <Suspense fallback={<Loading />}>
+            <User />
+          </Suspense>
+        ),
         children: [
           {
             path: '',
             loader: () => {
-              const posts = 'post'
-              return posts
+              return 'USER-POSTS'
             },
-            element: (
-              <Suspense fallback={<Loading />}>
-                <PostList />
-              </Suspense>
-            )
+            element: <PostList />
           },
           {
             path: 'like',
             loader: () => {
-              const posts = 'like'
-              return posts
+              return 'USER-LIKES'
             },
-            element: (
-              <Suspense fallback={<Loading />}>
-                <PostList />
-              </Suspense>
-            )
+            element: <PostList />
           }
         ]
       }

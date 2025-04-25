@@ -2,10 +2,12 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { formatDate } from '@/lib/utils'
 import { Link } from 'react-router-dom'
 import type { Posts } from '@/types'
-import PostAction from './PostinteractionBar'
+import PostAction from './PostAction'
 import PostImage from './PostImage'
+import { useUserStore } from '@/stores/useCurrentUserStore'
 
 const PostCard = ({ post }: { post: Posts }) => {
+  const { currentUser } = useUserStore()
   const { user, content, createdAt, id } = post
 
   return (
@@ -20,14 +22,14 @@ const PostCard = ({ post }: { post: Posts }) => {
         </Avatar>
         <div className="flex-1">
           {/* 用户信息及时间 */}
-          <div className="flex items-center gap-1">
-            <span className="font-bold">{user.username}</span>
-            <span className="text-muted-foreground">{user.handle}</span>
-            <span className="text-muted-foreground">·</span>
-            <span className="text-muted-foreground">{formatDate(createdAt)}</span>
-          </div>
-
           <Link to={`/post/${id}`}>
+            <div className="flex items-center gap-1">
+              <span className="font-bold">{user.username}</span>
+              <span className="text-muted-foreground">{`@${user.handle}`}</span>
+              <span className="text-muted-foreground">·</span>
+              <span className="text-muted-foreground">{formatDate(createdAt)}</span>
+            </div>
+
             {/* 帖子内容 */}
             <p className="mt-1 mb-3 break-all whitespace-pre-wrap">{content}</p>
 
@@ -36,7 +38,12 @@ const PostCard = ({ post }: { post: Posts }) => {
           </Link>
 
           {/* 交互按钮 */}
-          <PostAction post={post} />
+          <PostAction
+            comments={post.comments.length}
+            likes={post.likes}
+            favorites={post.favorites}
+            currentUser={currentUser}
+          />
         </div>
       </div>
     </div>
