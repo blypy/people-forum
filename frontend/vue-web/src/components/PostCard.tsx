@@ -30,10 +30,10 @@ const PostCard = ({ post }: { post: Posts }) => {
 
             {/* 帖子内容 */}
             <p className="mt-1 mb-3 break-all whitespace-pre-wrap">{content}</p>
-
-            {/* 帖子图片 */}
-            {post.images && <PostImage images={post.images} />}
           </Link>
+
+          {/* 帖子图片 */}
+          {post.images && <PostImage images={post.images} />}
 
           {/* 交互按钮 */}
           <PostAction

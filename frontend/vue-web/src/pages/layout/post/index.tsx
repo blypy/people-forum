@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, MessageSquareMore as msg, ChevronDown, ChevronUp, Image as img } from 'lucide-react'
 import { Link, useParams, useNavigate } from 'react-router'
-import { memo, useRef, useState } from 'react'
+import { forwardRef, memo, useRef, useState, useImperativeHandle } from 'react'
 import { Comments } from '@/types'
 import { CommentImage, PostImage } from '@/components/PostImage'
 import { formatDate } from '@/lib/utils'
@@ -17,10 +17,10 @@ const MessageSquareMore = memo(msg)
 const Image = memo(img)
 
 //评论组件
-const CommentComponent = ({ comment, avatar }: { comment: Comments; avatar: string }) => {
+const Comment = ({ comment, avatar }: { comment: Comments; avatar: string }) => {
   const [showReplies, setShowReplies] = useState(false) //显示子评论状态
   const [showReplyInput, setShowReplyInput] = useState(false) //控制评论回复框显示状态
-  const replyCommentRef = useRef<HTMLTextAreaElement>(null) //评论input
+  const commentFormRef = useRef<{ focus: () => void }>(null) //评论表单ref
 
   const hasReplies = comment.replies && comment.replies.length > 0 //判断子评论是否存在
 
@@ -48,6 +48,9 @@ const CommentComponent = ({ comment, avatar }: { comment: Comments; avatar: stri
               className="rounded-full h-auto hover:text-primary py-1 -ml-2"
               onClick={() => {
                 setShowReplyInput(true)
+                setTimeout(() => {
+                  commentFormRef.current?.focus()
+                }, 1)
               }}
             >
               <MessageSquareMore className="size-4" />
@@ -80,7 +83,14 @@ const CommentComponent = ({ comment, avatar }: { comment: Comments; avatar: stri
           </div>
 
           {/* 回复评论输入框 */}
-          {showReplyInput && <CommentForm avatar={avatar} className="mt-3 pl-2 border-l-2 border-border" />}
+          {showReplyInput && (
+            <CommentForm
+              ref={commentFormRef}
+              avatar={avatar}
+              className="mt-3 pl-2 border-l-2 border-border"
+              type="reply"
+            />
+          )}
 
           {/* 子评论列表 */}
           {hasReplies && showReplies && (
@@ -106,7 +116,7 @@ const CommentComponent = ({ comment, avatar }: { comment: Comments; avatar: stri
                       className="rounded-full h-auto mt-1 hover:text-primary -ml-2 py-1"
                       onClick={() => {
                         setShowReplyInput(true)
-                        replyCommentRef.current?.focus()
+                        commentFormRef.current?.focus()
                       }}
                     >
                       <MessageSquareMore className="size-3" />
@@ -123,10 +133,21 @@ const CommentComponent = ({ comment, avatar }: { comment: Comments; avatar: stri
   )
 }
 
-//评论表单
-const CommentForm = ({ avatar, className }: { avatar: string; className?: string }) => {
-  const { imgRef, images, removeImage, handleImageChange } = useFile()
+// 评论表单
+const CommentForm = forwardRef<
+  { focus: () => void },
+  { avatar: string; className?: string; type: 'reply' | 'parent' }
+>(({ avatar, className, type }, ref) => {
+  const { imgRef, images, removeImage, handleImageChange, setImages } = useFile()
   const [commentContent, setCommentContent] = useState('')
+  const commentRef = useRef<HTMLTextAreaElement>(null)
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      commentRef.current?.focus()
+    }
+  }))
+
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault()
     if (!commentContent.trim()) return
@@ -135,6 +156,16 @@ const CommentForm = ({ avatar, className }: { avatar: string; className?: string
       return
     }
     setCommentContent('')
+    setImages([])
+
+    if (type === 'parent') {
+      //提交父评论
+      console.log(commentContent + '父评论')
+    } else {
+      //提交子评论
+      console.log(commentContent + '子评论')
+    }
+
     toast.success('评论成功')
   }
 
@@ -148,6 +179,7 @@ const CommentForm = ({ avatar, className }: { avatar: string; className?: string
           onChange={e => setCommentContent(e.target.value)}
           placeholder="发布你的回复"
           className="w-full border-b border-border outline-none bg-transparent resize-none h-full"
+          ref={commentRef}
         />
         <CommentImage images={images} onRemove={removeImage} />
         <div className="flex mt-2 justify-between">
@@ -178,7 +210,7 @@ const CommentForm = ({ avatar, className }: { avatar: string; className?: string
       </div>
     </form>
   )
-}
+})
 
 const TopLink = () => {
   const navigate = useNavigate()
@@ -223,9 +255,7 @@ export default function Post() {
         <div className="mt-3 whitespace-pre-wrap">
           <p className="mb-1">{post?.content}</p>
         </div>
-
         <PostImage images={post?.images} />
-
         <div className="flex mt-4 text-muted-foreground text-sm border-b border-border pb-3">
           <span>{formatDate(post?.createdAt || new Date())}</span>
         </div>
@@ -239,12 +269,11 @@ export default function Post() {
       </div>
 
       {/* 回复输入框 */}
-      <CommentForm avatar={currentUser?.avatar || ''} className="p-4 border-b border-border" />
-
+      <CommentForm avatar={currentUser?.avatar || ''} className="p-4 border-b border-border" type="parent" />
       {/* 回复列表 */}
       <div>
         {post?.comments.map(comment => (
-          <CommentComponent key={comment.id} comment={comment} avatar={currentUser?.avatar || ''} />
+          <Comment key={comment.id} comment={comment} avatar={currentUser?.avatar || ''} />
         ))}
       </div>
     </div>
