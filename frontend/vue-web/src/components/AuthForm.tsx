@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router'
 import { toast } from 'sonner'
 import { Loader } from 'lucide-react'
 import { login } from '@/api/auth'

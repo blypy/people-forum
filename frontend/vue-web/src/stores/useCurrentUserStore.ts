@@ -1,4 +1,4 @@
-// stores/useUserStore.ts
+// 全局用户状态管理
 import { User } from '@/types'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'

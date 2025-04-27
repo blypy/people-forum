@@ -1,18 +1,18 @@
 import { lazy } from 'react'
 import Login from '@/pages/auth/login'
 import Register from '@/pages/auth/register'
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router'
 import { Suspense } from 'react'
-
 import { NotFound } from '@/components/NotFound'
-import Search from '@/pages/layout/search'
 import Loading from '@/components/Loading'
 
 const Home = lazy(() => import('@/pages/layout/home'))
-const PostList = lazy(() => import('@/components/PostList'))
+const PostList = lazy(() => import('@/pages/layout/user/postlist'))
 const Layout = lazy(() => import('@/pages/layout/layout'))
 const User = lazy(() => import('@/pages/layout/user'))
 const Post = lazy(() => import('@/pages/layout/post'))
+const Favorite = lazy(() => import('@/pages/layout/favorite'))
+const Search = lazy(() => import('@/pages/layout/search'))
 
 const router = createBrowserRouter([
   {
@@ -37,14 +37,19 @@ const router = createBrowserRouter([
       },
       {
         path: '/favorite',
-        loader: () => {
-          return 'USER-FAVORITE'
-        },
-        element: <PostList />
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Favorite />
+          </Suspense>
+        )
       },
       {
         path: '/search',
-        element: <Search />
+        element: (
+          <Suspense fallback={<Loading />}>
+            <Search />
+          </Suspense>
+        )
       },
       {
         path: '/user/:id',

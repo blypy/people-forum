@@ -1,5 +1,5 @@
-import { useLoaderData, useParams } from 'react-router-dom'
-import PostCard from './PostCard'
+import { useLoaderData, useParams } from 'react-router'
+import PostCard from '@/components/PostCard' 
 import { useUserPostsByKey } from '@/hooks/useUser'
 
 const PostList = () => {
@@ -7,7 +7,7 @@ const PostList = () => {
   const { id } = useParams()
   const { data } = useUserPostsByKey(key, Number(id))
   const posts = data?.posts || []
-
+  
   return (
     <div>
       {posts.length > 0 ? (
@@ -17,7 +17,7 @@ const PostList = () => {
           ))}
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center h-40 text-2xl text-gray-500">
+        <div className="flex flex-col items-center justify-center min-h-[32vh] text-2xl">
           <p>暂无内容</p>
         </div>
       )}

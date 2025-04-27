@@ -1,132 +1,35 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, MessageSquareMore, ChevronDown, ChevronUp } from 'lucide-react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
-import { useRef, useState } from 'react'
+import { ArrowLeft, MessageSquareMore as msg, ChevronDown, ChevronUp, Image as img } from 'lucide-react'
+import { Link, useParams, useNavigate } from 'react-router'
+import { memo, useRef, useState } from 'react'
 import { Comments } from '@/types'
-import PostImage from '@/components/PostImage'
+import { CommentImage, PostImage } from '@/components/PostImage'
 import { formatDate } from '@/lib/utils'
-import PostinteractionBar from '@/components/PostAction'
 import { usePostById } from '@/hooks/usePost'
 import { ItemNotFound } from '@/components/NotFound'
 import { useUserStore } from '@/stores/useCurrentUserStore'
+import UserAvatar from '@/components/UserAvatar'
+import PostAction from '@/components/PostAction'
+import { useFile } from '@/hooks/useFile'
+import { toast } from 'sonner'
 
-export default function Post() {
-  const { id } = useParams() //帖子的id
-  const navigate = useNavigate()
-  const [commentContent, setCommentContent] = useState('')
-  const { data: post, isError } = usePostById(Number(id))
-  const { currentUser } = useUserStore()
-
-  const handleSubmitComment = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!commentContent.trim()) return
-    setCommentContent('')
-  }
-
-  if (isError || !post) return <ItemNotFound type="post" />
-
-  return (
-    <div className="mx-auto border-r border-border min-h-screen pb-20">
-      {/* 顶部导航 */}
-      <div className="sticky top-0 z-10 bg-background p-4 border-b border-border flex items-center">
-        <Button className="mr-6 rounded-full" onClick={() => navigate(-1)} variant={'ghost'}>
-          <ArrowLeft className="size-5" />
-        </Button>
-        <h1 className="text-xl font-bold">帖子</h1>
-      </div>
-
-      <div className="p-4 pb-1 border-b border-border">
-        <div className="flex justify-between items-start">
-          <div className="flex gap-3">
-            <Link to={`/user/${post?.user.id}`}>
-              <Avatar className="size-10">
-                <AvatarImage src={post?.user.avatar} alt={post?.user.avatar} />
-                <AvatarFallback>{post?.user.username.slice(0, 2)}</AvatarFallback>
-              </Avatar>
-            </Link>
-            <div>
-              <div className="flex items-center gap-1">
-                <span className="font-bold">{post?.user.username}</span>
-              </div>
-              <p className="text-muted-foreground">{`@${post?.user.handle}`}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* 帖子文本内容 */}
-        <div className="mt-3 whitespace-pre-wrap">
-          <p className="mb-1">{post?.content}</p>
-        </div>
-
-        <PostImage images={post?.images} />
-
-        <div className="flex mt-4 text-muted-foreground text-sm border-b border-border pb-3">
-          <span>{formatDate(post?.createdAt || new Date())}</span>
-        </div>
-
-        <PostinteractionBar
-          comments={post?.comments.length || 0}
-          likes={post?.likes}
-          favorites={post?.favorites}
-          currentUser={currentUser}
-        />
-      </div>
-
-      {/* 回复输入框 */}
-      <form className="p-4 border-b border-border flex items-start gap-3" onSubmit={handleSubmitComment}>
-        <Avatar className="size-10">
-          <AvatarImage src={currentUser?.avatar} alt="当前用户" />
-          <AvatarFallback>ME</AvatarFallback>
-        </Avatar>
-        <div className="flex-1">
-          <input
-            type="text"
-            name="content"
-            value={commentContent}
-            onChange={e => setCommentContent(e.target.value)}
-            placeholder="发布你的回复"
-            className="w-full h-12 border-b border-border outline-none bg-transparent"
-          />
-          <div className="flex justify-end mt-2">
-            <Button className="rounded-full" type="submit" disabled={!commentContent.trim()}>
-              回复
-            </Button>
-          </div>
-        </div>
-      </form>
-
-      {/* 回复列表 */}
-      <div>
-        {post?.comments.map(comment => (
-          <CommentComponent key={comment.id} comment={comment} avatar={currentUser?.avatar || ''} />
-        ))}
-      </div>
-    </div>
-  )
-}
+const MessageSquareMore = memo(msg)
+const Image = memo(img)
 
 //评论组件
 const CommentComponent = ({ comment, avatar }: { comment: Comments; avatar: string }) => {
   const [showReplies, setShowReplies] = useState(false) //显示子评论状态
-  const [replyContent, setReplyContent] = useState('') //评论内容
   const [showReplyInput, setShowReplyInput] = useState(false) //控制评论回复框显示状态
-  const replyInputRef = useRef<HTMLInputElement>(null) //评论input
+  const replyCommentRef = useRef<HTMLTextAreaElement>(null) //评论input
 
   const hasReplies = comment.replies && comment.replies.length > 0 //判断子评论是否存在
-  const isOnlyMention = (text: string) => {
-    return /^@\w+：\s*$/.test(text.trim()) //检查评论内容
-  }
 
   return (
     <div className="p-4 border-b border-border">
       {/* 评论内容 */}
       <div className="flex gap-3">
         <Link to={`/user/${comment.user.id}`}>
-          <Avatar className="size-10">
-            <AvatarImage src={comment.user.avatar} alt={comment.user.username} />
-            <AvatarFallback>{comment.user.username.slice(0, 2)}</AvatarFallback>
-          </Avatar>
+          <UserAvatar avatar={comment.user.avatar} name={comment.user.avatar} className="size-10" />
         </Link>
         <div className="flex-1">
           <div className="flex items-center">
@@ -145,8 +48,6 @@ const CommentComponent = ({ comment, avatar }: { comment: Comments; avatar: stri
               className="rounded-full h-auto hover:text-primary py-1 -ml-2"
               onClick={() => {
                 setShowReplyInput(true)
-                setReplyContent('')
-                replyInputRef.current?.focus()
               }}
             >
               <MessageSquareMore className="size-4" />
@@ -179,52 +80,7 @@ const CommentComponent = ({ comment, avatar }: { comment: Comments; avatar: stri
           </div>
 
           {/* 回复评论输入框 */}
-          {showReplyInput && (
-            <form className="mt-3 pl-2 border-l-2 border-border">
-              <div className="flex items-start gap-2">
-                <Avatar className="size-10">
-                  <AvatarImage src={avatar} alt="当前用户" />
-                  <AvatarFallback>ME</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    value={replyContent}
-                    onChange={e => setReplyContent(e.target.value)}
-                    placeholder={`回复@${comment.user.handle}`}
-                    ref={replyInputRef}
-                    className="w-full border-b border-border py-2 bg-transparent outline-none text-sm"
-                  />
-                  <div className="flex justify-end mt-2 space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="rounded-full text-xs"
-                      onClick={() => {
-                        setShowReplyInput(false)
-                        setReplyContent('')
-                      }}
-                    >
-                      取消
-                    </Button>
-                    <Button
-                      size="sm"
-                      className="rounded-full text-xs"
-                      disabled={!replyContent.trim() || isOnlyMention(replyContent)}
-                      onClick={() => {
-                        // 添加提交回复的逻辑
-                        console.log(`回复到评论 ${comment.id}: ${replyContent}`)
-                        setShowReplyInput(false)
-                        setReplyContent('')
-                      }}
-                    >
-                      回复
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </form>
-          )}
+          {showReplyInput && <CommentForm avatar={avatar} className="mt-3 pl-2 border-l-2 border-border" />}
 
           {/* 子评论列表 */}
           {hasReplies && showReplies && (
@@ -232,10 +88,7 @@ const CommentComponent = ({ comment, avatar }: { comment: Comments; avatar: stri
               {comment.replies?.map(reply => (
                 <div key={reply.id} className="flex gap-2 pt-3">
                   <Link to={`/user/${reply.user.id}`}>
-                    <Avatar className="size-10 flex-shrink-0">
-                      <AvatarImage src={reply.user.avatar} alt={reply.user.username} />
-                      <AvatarFallback>{reply.user.username.slice(0, 2)}</AvatarFallback>
-                    </Avatar>
+                    <UserAvatar avatar={reply.user.avatar} name={reply.user.avatar} className="siez-10" />
                   </Link>
                   <div className="flex-1">
                     <div className="flex items-center flex-wrap">
@@ -253,8 +106,7 @@ const CommentComponent = ({ comment, avatar }: { comment: Comments; avatar: stri
                       className="rounded-full h-auto mt-1 hover:text-primary -ml-2 py-1"
                       onClick={() => {
                         setShowReplyInput(true)
-                        setReplyContent(`@${reply.user.handle}：`)
-                        replyInputRef.current?.focus()
+                        replyCommentRef.current?.focus()
                       }}
                     >
                       <MessageSquareMore className="size-3" />
@@ -266,6 +118,134 @@ const CommentComponent = ({ comment, avatar }: { comment: Comments; avatar: stri
             </div>
           )}
         </div>
+      </div>
+    </div>
+  )
+}
+
+//评论表单
+const CommentForm = ({ avatar, className }: { avatar: string; className?: string }) => {
+  const { imgRef, images, removeImage, handleImageChange } = useFile()
+  const [commentContent, setCommentContent] = useState('')
+  const handleSubmitComment = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!commentContent.trim()) return
+    if (commentContent.trim().length >= 200) {
+      toast.error('评论最大200字')
+      return
+    }
+    setCommentContent('')
+    toast.success('评论成功')
+  }
+
+  return (
+    <form className={`flex items-start gap-3 ${className}`} onSubmit={handleSubmitComment}>
+      <UserAvatar avatar={avatar} className="size-10" />
+      <div className="flex-1">
+        <textarea
+          name="content"
+          value={commentContent}
+          onChange={e => setCommentContent(e.target.value)}
+          placeholder="发布你的回复"
+          className="w-full border-b border-border outline-none bg-transparent resize-none h-full"
+        />
+        <CommentImage images={images} onRemove={removeImage} />
+        <div className="flex mt-2 justify-between">
+          <input type="file" ref={imgRef} className="hidden" onChange={handleImageChange} name="images" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full size-8"
+            type="button"
+            onClick={() => imgRef.current?.click()}
+          >
+            <Image className="size-5" />
+          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="rounded-full text-xs" type="button">
+              取消
+            </Button>
+            <Button
+              className="rounded-full text-sm"
+              size="sm"
+              type="submit"
+              disabled={!commentContent.trim()}
+            >
+              回复{commentContent && `(${commentContent.trim().length}字)`}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </form>
+  )
+}
+
+const TopLink = () => {
+  const navigate = useNavigate()
+  return (
+    <div className="sticky top-0 z-10 bg-background p-4 border-b border-border flex items-center">
+      <Button className="rounded-full mr-6" onClick={() => navigate(-1)} variant={'ghost'} size={'icon'}>
+        <ArrowLeft className="size-5" />
+      </Button>
+      <h1 className="text-xl font-bold">帖子</h1>
+    </div>
+  )
+}
+
+export default function Post() {
+  const { id } = useParams() //帖子的id
+  const { data: post, isError } = usePostById(Number(id))
+  const { currentUser } = useUserStore()
+
+  if (isError || !post) return <ItemNotFound type="post" />
+
+  return (
+    <div className="mx-auto border-r border-border min-h-screen pb-20">
+      {/* 顶部导航 */}
+      <TopLink />
+
+      <div className="p-4 pb-1 border-b border-border">
+        <div className="flex justify-between items-start">
+          <div className="flex gap-3">
+            <Link to={`/user/${post?.author.id}`}>
+              <UserAvatar avatar={post.author.avatar} name={post.author.username} className="size-10" />
+            </Link>
+            <div>
+              <div className="flex items-center gap-1">
+                <span className="font-bold">{post?.author.username}</span>
+              </div>
+              <p className="text-muted-foreground">{`@${post?.author.handle}`}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* 帖子文本内容 */}
+        <div className="mt-3 whitespace-pre-wrap">
+          <p className="mb-1">{post?.content}</p>
+        </div>
+
+        <PostImage images={post?.images} />
+
+        <div className="flex mt-4 text-muted-foreground text-sm border-b border-border pb-3">
+          <span>{formatDate(post?.createdAt || new Date())}</span>
+        </div>
+
+        <PostAction
+          comments={post?.comments.length || 0}
+          likes={post?.likes}
+          favorites={post?.favorites}
+          currentUser={currentUser}
+        />
+      </div>
+
+      {/* 回复输入框 */}
+      <CommentForm avatar={currentUser?.avatar || ''} className="p-4 border-b border-border" />
+
+      {/* 回复列表 */}
+      <div>
+        {post?.comments.map(comment => (
+          <CommentComponent key={comment.id} comment={comment} avatar={currentUser?.avatar || ''} />
+        ))}
       </div>
     </div>
   )

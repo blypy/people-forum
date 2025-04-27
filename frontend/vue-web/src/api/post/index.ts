@@ -1,4 +1,4 @@
-import type { Posts } from '@/types'
+import type { PostDetails, Posts } from '@/types'
 
 export async function getAllPosts(): Promise<{ posts: Posts[] }> {
   const res = await fetch('http://localhost:3000/posts')
@@ -7,7 +7,7 @@ export async function getAllPosts(): Promise<{ posts: Posts[] }> {
   return data
 }
 
-export async function getPostById(postId: number): Promise<Posts> {
+export async function getPostById(postId: number): Promise<PostDetails> {
   const res = await fetch(`http://localhost:3000/posts/${postId}`)
   if (!res.ok) throw new Error('获取帖子详情失败')
   const data = await res.json()

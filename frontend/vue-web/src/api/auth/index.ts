@@ -1,16 +1,11 @@
 // 登录注册
-import type { User } from '@/types'
+import type { User, AuthData } from '@/types'
 
 interface AuthResponse {
   success: boolean
   message: string
   user: User
   token: string
-}
-
-interface AuthData {
-  email: string
-  password: string
 }
 
 // 注册API

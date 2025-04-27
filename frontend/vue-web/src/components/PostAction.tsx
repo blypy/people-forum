@@ -48,7 +48,7 @@ const PostAction = ({ comments, likes, favorites, currentUser }: PostActionProps
   }
 
   return (
-    <div className="flex justify-between mt-2 text-gray-500">
+    <div className="flex justify-between mt-2">
       <Posting mode={'comment'}>
         <Button
           className="flex items-center gap-2 hover:text-blue-500 rounded-full"

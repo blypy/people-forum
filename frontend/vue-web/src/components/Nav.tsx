@@ -3,9 +3,11 @@ import Posting from './Posting'
 import { Button } from './ui/button'
 import { ThemeToggle } from './ui/theme-toggle'
 import { useUserStore } from '@/stores/useCurrentUserStore'
-import { NavLink, Link } from 'react-router-dom'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { NavLink, Link } from 'react-router'
+import UserAvatar from './UserAvatar'
 import { House, Search, Bookmark, CircleUserRound, MoreHorizontal } from 'lucide-react'
+import { memo } from 'react'
+import { User } from '@/types'
 
 const nav = [
   {
@@ -30,8 +32,54 @@ const nav = [
   }
 ]
 
+const NavLinks = memo(function NavLinks({ currentUser }: { currentUser: User | null }) {
+  return (
+    <ul className="text-2xl flex flex-col gap-4">
+      {nav.map(item => (
+        <li key={item.link}>
+          <NavLink
+            to={item.link === '/user' ? `/user/${currentUser?.id}` : item.link}
+            className={({ isActive }) =>
+              `flex items-center gap-5 cursor-pointer hover:bg-secondary active:bg-secondary rounded-full py-2 px-4 transition-colors ${
+                isActive ? 'font-bold' : ''
+              }`
+            }
+          >
+            {item.icon}
+            <p className="hidden xl:block">{item.title}</p>
+          </NavLink>
+        </li>
+      ))}
+    </ul>
+  )
+})
+
+const UserMenu = memo(function UserMenu({ currentUser }: { currentUser: User | null }) {
+  if (!currentUser) {
+    return (
+      <Link to="/login" className="w-full">
+        <Button>登录</Button>
+      </Link>
+    )
+  }
+
+  return (
+    <DropMenu>
+      <div className="flex items-center gap-2 hover:bg-secondary active:bg-secondary/80 rounded-full py-2 px-4 transition-colors">
+        <UserAvatar
+          avatar={currentUser.avatar}
+          name={currentUser.username}
+          className="hover:scale-110 transition-transform"
+        />
+        <p className="xl:block hidden">{currentUser.username}</p>
+        <MoreHorizontal className="xl:block hidden text-xl ml-5 self-end" />
+      </div>
+    </DropMenu>
+  )
+})
+
 const Nav = () => {
-  const { currentUser } = useUserStore()
+  const currentUser = useUserStore(state => state.currentUser)
   return (
     <nav className="flex flex-col gap-4 xl:w-62 w-22 h-screen p-4 border-r fixed bg-background text-foreground">
       {/* logo */}
@@ -42,23 +90,7 @@ const Nav = () => {
       </Link>
 
       {/* 导航栏 */}
-      <ul className="text-2xl flex flex-col gap-4">
-        {nav.map((item, index) => (
-          <li key={index}>
-            <NavLink
-              to={item.link === '/user' ? `/user/${currentUser?.id}` : item.link}
-              className={({ isActive }) =>
-                `flex items-center gap-5 cursor-pointer hover:bg-secondary active:bg-secondary rounded-full py-2 px-4 transition-colors ${
-                  isActive && 'font-bold'
-                }`
-              }
-            >
-              <div className="transition-transform">{item.icon}</div>
-              <p className="hidden xl:block">{item.title}</p>
-            </NavLink>
-          </li>
-        ))}
-      </ul>
+      <NavLinks currentUser={currentUser} />
 
       {/* 发布按钮 */}
       <div className="flex justify-center xl:block">
@@ -72,25 +104,11 @@ const Nav = () => {
 
       {/* 个人信息 */}
       <div className="flex mt-auto items-center">
-        {currentUser ? (
-          <DropMenu>
-            <div className="flex items-center gap-2 hover:bg-secondary active:bg-secondary/80 rounded-full py-2 px-4 transition-colors">
-              <Avatar className="hover:scale-110 transition-transform">
-                <AvatarImage src={currentUser.avatar} alt="@shadcn" />
-                <AvatarFallback>ME</AvatarFallback>
-              </Avatar>
-              <p className="xl:block hidden">{currentUser.username}</p>
-              <MoreHorizontal className="xl:block hidden text-xl ml-5 self-end" />
-            </div>
-          </DropMenu>
-        ) : (
-          <Link to={'/login'} className="w-full">
-            <Button>登录</Button>
-          </Link>
-        )}
+        <UserMenu currentUser={currentUser} />
         <ThemeToggle />
       </div>
     </nav>
   )
 }
+
 export default Nav

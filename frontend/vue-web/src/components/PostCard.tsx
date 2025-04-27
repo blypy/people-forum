@@ -1,31 +1,29 @@
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { formatDate } from '@/lib/utils'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import type { Posts } from '@/types'
 import PostAction from './PostAction'
-import PostImage from './PostImage'
+import { PostImage } from './PostImage'
 import { useUserStore } from '@/stores/useCurrentUserStore'
+import { memo } from 'react'
+import UserAvatar from './UserAvatar'
 
 const PostCard = ({ post }: { post: Posts }) => {
   const { currentUser } = useUserStore()
-  const { user, content, createdAt, id } = post
+  const { author, content, createdAt, id } = post
 
   return (
     <div className="border-b border-r border-border p-4 hover:bg-secondary/40 transition-colors w-full">
       {/* 头像 */}
       <div className="flex gap-3">
-        <Avatar className="size-10">
-          <Link to={`/user/${user.id}`} className="size-10">
-            <AvatarImage src={user.avatar} alt={user.username} />
-            <AvatarFallback>{user.username.slice(0, 2)}</AvatarFallback>
-          </Link>
-        </Avatar>
+        <Link to={`/user/${author.id}`} className="size-10">
+          <UserAvatar avatar={author.avatar} name={author.username} className="size-10" />
+        </Link>
         <div className="flex-1">
           {/* 用户信息及时间 */}
           <Link to={`/post/${id}`}>
             <div className="flex items-center gap-1">
-              <span className="font-bold">{user.username}</span>
-              <span className="text-muted-foreground">{`@${user.handle}`}</span>
+              <span className="font-bold">{author.username}</span>
+              <span className="text-muted-foreground">{`@${author.handle}`}</span>
               <span className="text-muted-foreground">·</span>
               <span className="text-muted-foreground">{formatDate(createdAt)}</span>
             </div>
@@ -39,7 +37,7 @@ const PostCard = ({ post }: { post: Posts }) => {
 
           {/* 交互按钮 */}
           <PostAction
-            comments={post.comments.length}
+            comments={post._count.comments}
             likes={post.likes}
             favorites={post.favorites}
             currentUser={currentUser}
@@ -50,4 +48,4 @@ const PostCard = ({ post }: { post: Posts }) => {
   )
 }
 
-export default PostCard
+export default memo(PostCard)

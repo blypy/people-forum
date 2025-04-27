@@ -1,5 +1,5 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 
 const DropMenu = ({ children }: { children: React.ReactNode }) => {
   return (
