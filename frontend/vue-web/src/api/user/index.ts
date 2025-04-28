@@ -1,5 +1,6 @@
-import type { Posts, User } from '@/types'
+import type { MarkPostParams, Posts, User } from '@/types'
 
+//获取数据相关
 export async function getUserById(userId: number): Promise<User> {
   const res = await fetch(`http://localhost:3000/users/${userId}`)
   if (!res.ok) throw new Error('获取用户信息失败')
@@ -27,6 +28,35 @@ export async function getUserFavoritePosts(userId: number): Promise<{ posts: Pos
 export async function getUserLikedPosts(userId: number): Promise<{ posts: Posts[] }> {
   const res = await fetch(`http://localhost:3000/users/${userId}/likes`)
   if (!res.ok) throw new Error('获取用户点赞文章失败')
+  const data = await res.json()
+  return data
+}
+
+//更新操作相关
+//点赞或收藏帖子
+export async function markPost(PostData: MarkPostParams) {
+  const res = await fetch(`http://localhost:3000/interactions/${PostData.type}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(PostData)
+  })
+  if (!res.ok) throw new Error('点赞失败')
+  const data = await res.json()
+  return data
+}
+
+//取消点赞或收藏帖子
+export async function unMarkPost(PostData: MarkPostParams) {
+  const res = await fetch(`http://localhost:3000/interactions/${PostData.type}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(PostData)
+  })
+  if (!res.ok) throw new Error('取消点赞失败')
   const data = await res.json()
   return data
 }

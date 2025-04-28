@@ -92,8 +92,9 @@ const ActiveTabBar = () => {
 
 export default function User() {
   const { id } = useParams() //userid
-  const { data: user, isError } = useUserById(Number(id))
+  const { data: user, isError, isLoading } = useUserById(Number(id))
   // 用户不存在
+  if (isLoading) return
   if (isError || !user) return <ItemNotFound type="user" />
 
   return (

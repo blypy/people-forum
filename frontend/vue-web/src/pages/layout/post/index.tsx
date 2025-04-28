@@ -39,6 +39,7 @@ const Comment = ({ comment, avatar }: { comment: Comments; avatar: string }) => 
             <span className="text-muted-foreground">{formatDate(comment.createdAt)}</span>
           </div>
           <p className="mt-1 mb-2">{comment.content}</p>
+          <PostImage images={comment.images} />
 
           {/* 回复评论图标 */}
           <div className="flex items-center text-muted-foreground">
@@ -108,6 +109,7 @@ const Comment = ({ comment, avatar }: { comment: Comments; avatar: string }) => 
                       <span className="text-muted-foreground text-xs">{formatDate(reply.createdAt)}</span>
                     </div>
                     <p className="mt-1 text-sm">{reply.content}</p>
+                    <PostImage images={reply.images} />
 
                     {/* 子评论的回复图标 */}
                     <Button
@@ -181,7 +183,7 @@ const CommentForm = forwardRef<
           className="w-full border-b border-border outline-none bg-transparent resize-none h-full"
           ref={commentRef}
         />
-        <CommentImage images={images} onRemove={removeImage} />
+        <CommentImage images={images} onRemove={removeImage} className="w-xl" />
         <div className="flex mt-2 justify-between">
           <input type="file" ref={imgRef} className="hidden" onChange={handleImageChange} name="images" />
           <Button
@@ -226,9 +228,10 @@ const TopLink = () => {
 
 export default function Post() {
   const { id } = useParams() //帖子的id
-  const { data: post, isError } = usePostById(Number(id))
+  const { data: post, isError, isLoading } = usePostById(Number(id))
   const { currentUser } = useUserStore()
 
+  if (isLoading) return
   if (isError || !post) return <ItemNotFound type="post" />
 
   return (
@@ -239,9 +242,13 @@ export default function Post() {
       <div className="p-4 pb-1 border-b border-border">
         <div className="flex justify-between items-start">
           <div className="flex gap-3">
-            <Link to={`/user/${post?.author.id}`}>
-              <UserAvatar avatar={post.author.avatar} name={post.author.username} className="size-10" />
-            </Link>
+            <UserAvatar
+              avatar={post.author.avatar}
+              name={post.author.username}
+              userId={post?.author.id}
+              className="size-10"
+            />
+
             <div>
               <div className="flex items-center gap-1">
                 <span className="font-bold">{post?.author.username}</span>
@@ -261,10 +268,11 @@ export default function Post() {
         </div>
 
         <PostAction
-          comments={post?.comments.length || 0}
-          likes={post?.likes}
-          favorites={post?.favorites}
+          comments={post.comments.length || 0}
+          likes={post.likes}
+          favorites={post.favorites}
           currentUser={currentUser}
+          postId={post.id}
         />
       </div>
 

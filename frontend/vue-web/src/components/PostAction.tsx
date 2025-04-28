@@ -5,21 +5,24 @@ import { useState } from 'react'
 import { Button } from './ui/button'
 import type { Favorites, Like, User } from '@/types'
 import { Heart, MessageSquare, Share, Bookmark } from 'lucide-react'
+import { useMarkPost } from '@/hooks/useUser'
 
 interface PostActionProps {
+  postId: number
   comments: number
   likes: Like[]
   favorites: Favorites[]
   currentUser: User | null // 当前登录用户
 }
 
-const PostAction = ({ comments, likes, favorites, currentUser }: PostActionProps) => {
+const PostAction = ({ postId, comments, likes, favorites, currentUser }: PostActionProps) => {
   const [isLiked, setIsLiked] = useState(likes.some(like => like.userId === currentUser?.id)) //喜欢状态
   const [isFavorited, setIsFavorited] = useState(
     favorites.some(favorite => favorite.userId === currentUser?.id)
   ) //收藏状态
   const [likesCount, setLikesCount] = useState(likes.length) //喜欢数量
   const [favoritesCount, setFavoritesCount] = useState(favorites.length) //收藏数量
+  const mutation = useMarkPost()
 
   // 点赞逻辑
   const handleLike = () => {
@@ -27,6 +30,8 @@ const PostAction = ({ comments, likes, favorites, currentUser }: PostActionProps
       toast.error('请先登录')
       return
     }
+
+    mutation.mutate({ userId: currentUser.id, postId: postId, type: 'like' })
 
     //更新本地喜欢
     const newLikedState = !isLiked
@@ -40,7 +45,7 @@ const PostAction = ({ comments, likes, favorites, currentUser }: PostActionProps
       toast.error('请先登录')
       return
     }
-
+    mutation.mutate({ userId: currentUser.id, postId: postId, type: 'favorite' })
     // 更新本地收藏
     const newFavoritedState = !isFavorited
     setIsFavorited(newFavoritedState)
@@ -48,7 +53,7 @@ const PostAction = ({ comments, likes, favorites, currentUser }: PostActionProps
   }
 
   return (
-    <div className="flex justify-between mt-2">
+    <div className="flex justify-between mt-2" onClick={e => e.preventDefault()}>
       <Posting mode={'comment'}>
         <Button
           className="flex items-center gap-2 hover:text-blue-500 rounded-full"

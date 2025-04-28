@@ -1,5 +1,6 @@
 import type { PostDetails, Posts } from '@/types'
 
+//获取帖子数据相关
 export async function getAllPosts(): Promise<{ posts: Posts[] }> {
   const res = await fetch('http://localhost:3000/posts')
   if (!res.ok) throw new Error('获取全部帖子失败')
@@ -23,4 +24,18 @@ export async function getPostByQuery(query: string): Promise<Posts[]> {
   if (!res.ok) throw new Error('搜索帖子失败')
   const { posts } = await res.json()
   return posts ?? []
+}
+
+//创建帖子
+export async function createPost(postData: { content: string; images: string[]; authorId: number }) {
+  const res = await fetch('http://localhost:3000/comments/reply', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(postData)
+  })
+  if (!res.ok) throw new Error('回复失败')
+  const data = await res.json()
+  return data
 }

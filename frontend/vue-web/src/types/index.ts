@@ -56,6 +56,7 @@ export interface Comments {
   replies?: CommentReplies[] //子评论列表
   postId?: number //评论文章id
   userId?: number //评论用户id
+  images?: string[] //评论图片
 
   user: User //评论用户信息
 }
@@ -67,6 +68,7 @@ export interface CommentReplies {
   postId?: number //评论文章id
   userId?: number //评论用户id
   parentId: number //父评论id
+  images?: string[] //评论图片
 
   user: User //子评论用户信息
 }
@@ -88,4 +90,19 @@ export interface Favorites {
 export interface AuthData {
   email: string
   password: string
+}
+
+//点赞收藏提交的数据
+export interface MarkPostParams {
+  userId: number
+  postId: number
+  type: 'like' | 'favorite'
+}
+
+//评论提交的数
+export interface CommentParams {
+  userId: number
+  postId: number
+  content: string
+  images: string[]
 }

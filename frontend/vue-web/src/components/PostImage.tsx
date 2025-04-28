@@ -3,17 +3,19 @@ import { useState } from 'react'
 import { X, Loader } from 'lucide-react'
 import { Button } from './ui/button'
 
-// 提取公共的图片预览组件
 const PreviewImage = ({ src, onClose }: { src: string; onClose: () => void }) => {
   return (
-    <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80" onClick={onClose}>
       <div className="relative max-w-4xl max-h-[80vh] p-2" onClick={e => e.stopPropagation()}>
         <img src={src} alt="预览图片" className="object-contain max-h-[80vh] max-w-full" />
         <Button
           size="icon"
           variant="ghost"
           className="rounded-full absolute top-4 right-4 bg-background/80"
-          onClick={onClose}
+          onClick={e => {
+            e.preventDefault()
+            onClose()
+          }}
         >
           <X className="size-6" />
         </Button>
@@ -45,49 +47,51 @@ const Image = ({ src, alt, onClick }: { src: string; alt: string; onClick?: () =
   )
 }
 
+//帖子的图片
 const PostImage = ({ images }: { images?: string[] }) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null)
-
   if (!images || images.length === 0) return null
-
   return (
     <>
       <div className="mb-3 overflow-hidden">
-        {images.length > 1 ? (
-          <div
-            className={cn(
-              'grid gap-2',
-              images.length === 1 ? 'grid-cols-1' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
-            )}
-          >
-            {images.map((img, index) => (
-              <div
-                key={index}
-                className="relative rounded-2xl border-2 border-border overflow-hidden aspect-3/2"
-              >
-                <Image src={img} alt={`图片 ${index + 1}`} onClick={() => setPreviewImage(img)} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="relative rounded-2xl border-2 border-border overflow-hidden aspect-3/2">
-            <Image src={images[0]} alt="帖子图片" onClick={() => setPreviewImage(images[0])} />
-          </div>
-        )}
+        <div
+          className={cn(
+            'grid gap-2',
+            images.length === 1 ? 'grid-cols-1 w-xl' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
+          )}
+        >
+          {images.map((img, index) => (
+            <div
+              key={index}
+              className="relative rounded-2xl border-2 border-border overflow-hidden aspect-3/2"
+              onClick={e => e.preventDefault()}
+            >
+              <Image
+                src={img}
+                alt={`图片 ${index + 1}`}
+                onClick={() => {
+                  setPreviewImage(img)
+                }}
+              />
+            </div>
+          ))}
+        </div>
       </div>
       {previewImage && <PreviewImage src={previewImage} onClose={() => setPreviewImage(null)} />}
     </>
   )
 }
 
-interface CommentImageProps {
+//帖子评论输入框里的图片
+const CommentImage = ({
+  images,
+  onRemove,
+  className
+}: {
   images: string[]
   onRemove: (index: number) => void
   className?: string
-}
-
-const CommentImage = ({ images, onRemove, className }: CommentImageProps) => {
-  const [previewImage, setPreviewImage] = useState<string | null>(null)
+}) => {
   if (!images.length) return null
 
   return (
@@ -95,25 +99,20 @@ const CommentImage = ({ images, onRemove, className }: CommentImageProps) => {
       <div
         className={cn(
           'grid mt-3 gap-2',
-          images.length === 1 ? 'grid-cols-1' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-3',
-          className
+          images.length === 1
+            ? `grid-cols-1 ${className}`
+            : images.length === 2
+            ? 'grid-cols-2'
+            : 'grid-cols-3'
         )}
       >
         {images.map((img, index) => (
-          <div key={index} className="relative rounded-xl overflow-hidden border border-border max-h-full">
-            <img
-              src={img}
-              alt=""
-              className="w-full h-full object-cover hover:opacity-80 transition-opacity cursor-pointer"
-              onClick={e => {
-                e.stopPropagation()
-                setPreviewImage(img)
-              }}
-            />
+          <div key={index} className="relative rounded-xl overflow-hidden border border-border">
+            <img src={img} alt="" className="w-full h-full object-cover" onClick={e => e.stopPropagation()} />
             <Button
               size="icon"
               variant="ghost"
-              className="rounded-full absolute top-2 right-2 bg-background"
+              className="rounded-full absolute top-2 right-2 bg-background/80 size-7"
               type="button"
               onClick={e => {
                 e.stopPropagation()
@@ -125,8 +124,6 @@ const CommentImage = ({ images, onRemove, className }: CommentImageProps) => {
           </div>
         ))}
       </div>
-
-      {previewImage && <PreviewImage src={previewImage} onClose={() => setPreviewImage(null)} />}
     </>
   )
 }

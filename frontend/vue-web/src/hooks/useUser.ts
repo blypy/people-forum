@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
-import { getUserById, getUserPosts, getUserFavoritePosts, getUserLikedPosts } from '@/api'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { getUserById, getUserPosts, getUserFavoritePosts, getUserLikedPosts, markPost } from '@/api'
+import { MarkPostParams } from '@/types'
 
 //根据用户id获取用户信息
 export function useUserById(userId: number) {
@@ -34,5 +35,12 @@ export function useUserPostsByKey(key: string, userId: number) {
     queryKey: [key, userId],
     queryFn,
     enabled: !!userId
+  })
+}
+
+//给帖子点赞/收藏
+export function useMarkPost() {
+  return useMutation({
+    mutationFn: (PostData: MarkPostParams) => markPost(PostData)
   })
 }

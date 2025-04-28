@@ -69,7 +69,6 @@ const UserMenu = memo(function UserMenu({ currentUser }: { currentUser: User | n
         <UserAvatar
           avatar={currentUser.avatar}
           name={currentUser.username}
-          className="hover:scale-110 transition-transform"
         />
         <p className="xl:block hidden">{currentUser.username}</p>
         <MoreHorizontal className="xl:block hidden text-xl ml-5 self-end" />
