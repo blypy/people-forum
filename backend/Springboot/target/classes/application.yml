@@ -1,6 +1,7 @@
 #端口配置
 server:
   port: 8081
+
 #数据库配置
 spring:
   datasource:
@@ -8,3 +9,15 @@ spring:
     username: root
     password: 121333
     url: jdbc:mysql://localhost:3306/python_forum?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
+
+#配置Mybatis和xml映射
+mybatis:
+#  映射xml
+#  一般认为classpath包，对应的是resources目录
+  mapper-locations: classpath:mapper/*.xml
+#  配置日志
+  configuration:
+#    打印SQL到终端
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    将数据库中下划线替换成驼峰
+    map-underscore-to-camel-case: true
