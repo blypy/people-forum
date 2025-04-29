@@ -12,6 +12,20 @@ public class User {
     private Timestamp created_at;
     private Timestamp last_login;
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", salt='" + salt + '\'' +
+                ", password='" + password + '\'' +
+                ", status=" + status +
+                ", created_at=" + created_at +
+                ", last_login=" + last_login +
+                '}';
+    }
+
     public Integer getId() {
         return id;
     }
