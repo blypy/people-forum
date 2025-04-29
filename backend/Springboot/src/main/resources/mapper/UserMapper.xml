@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.forum.mapper.UserMapper">
+
+<!--    插入参数从entity实例类解析-->
+<!--    通过MyBatis映射的Java对象参数写驼峰-->
+    <insert id="insert" parameterType="com.forum.entity.User">
+        INSERT INTO user
+            (username, email, salt, password)
+        VALUES (
+                   #{username},
+                   #{email},
+                   #{salt},
+                   #{password}
+               )
+    </insert>
+
+    <select id="selectAll" resultType="com.forum.entity.User">
+        select * from user
+    </select>
+
+</mapper>

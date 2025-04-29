@@ -1,4 +1,4 @@
-package com.python_forum.exception;
+package com.forum.exception;
 
 
 //自定义异常抛出

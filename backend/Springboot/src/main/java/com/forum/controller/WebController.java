@@ -1,7 +1,7 @@
-package com.python_forum.controller;
+package com.forum.controller;
 
-import com.python_forum.common.Result;
-import com.python_forum.exception.CustomerException;
+import com.forum.common.Result;
+import com.forum.exception.CustomerException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
