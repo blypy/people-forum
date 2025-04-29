@@ -1,4 +1,4 @@
-package com.python_forum.common;
+package com.forum.common;
 
 /***
  * 统一返回的包装类
