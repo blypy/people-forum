@@ -28,9 +28,9 @@ const Image = ({ src, alt, onClick }: { src: string; alt: string; onClick?: () =
   const [isLoading, setIsLoading] = useState(true)
 
   return (
-    <div className="relative h-full">
+    <div className="w-full h-full">
       {isLoading && (
-        <div className="inset-0 flex items-center justify-center bg-background absolute">
+        <div className="flex items-center justify-center bg-background h-100">
           <Loader className="animate-spin size-6" style={{ animationDuration: '2000ms' }} />
         </div>
       )}
@@ -51,6 +51,7 @@ const Image = ({ src, alt, onClick }: { src: string; alt: string; onClick?: () =
 const PostImage = ({ images }: { images?: string[] }) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   if (!images || images.length === 0) return null
+
   return (
     <>
       <div className="mb-3 overflow-hidden">
@@ -60,10 +61,10 @@ const PostImage = ({ images }: { images?: string[] }) => {
             images.length === 1 ? 'grid-cols-1 w-xl' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
           )}
         >
-          {images.map((img, index) => (
+          {images?.map((img, index) => (
             <div
               key={index}
-              className="relative rounded-2xl border-2 border-border overflow-hidden aspect-3/2"
+              className="relative rounded-2xl border-2 border-border overflow-hidden"
               onClick={e => e.preventDefault()}
             >
               <Image

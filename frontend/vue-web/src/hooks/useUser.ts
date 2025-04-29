@@ -1,5 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { getUserById, getUserPosts, getUserFavoritePosts, getUserLikedPosts, markPost } from '@/api'
+import {
+  getUserById,
+  getUserPosts,
+  getUserFavoritePosts,
+  getUserLikedPosts,
+  markPost,
+  unMarkPost
+} from '@/api'
 import { MarkPostParams } from '@/types'
 
 //根据用户id获取用户信息
@@ -42,5 +49,11 @@ export function useUserPostsByKey(key: string, userId: number) {
 export function useMarkPost() {
   return useMutation({
     mutationFn: (PostData: MarkPostParams) => markPost(PostData)
+  })
+}
+
+export function useUnMarkPost() {
+  return useMutation({
+    mutationFn: (PostData: MarkPostParams) => unMarkPost(PostData)
   })
 }

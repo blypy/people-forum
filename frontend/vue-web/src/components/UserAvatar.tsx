@@ -16,7 +16,10 @@ const UserAvatar = ({
   return (
     <Avatar
       className={`${className} hover:scale-110 transition-transform`}
-      onClick={() => userId && navigate(`/user/${userId}`)}
+      onClick={e => {
+        e.preventDefault()
+        if (userId) navigate(`/user/${userId}`)
+      }}
     >
       <AvatarImage src={avatar} alt={name} />
       <AvatarFallback>{name?.slice(0, 2)}</AvatarFallback>

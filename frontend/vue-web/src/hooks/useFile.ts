@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 export const useFile = () => {
   const imgRef = useRef<HTMLInputElement>(null)
   const [images, setImages] = useState<string[]>([])
+  const [imageFiles, setImageFiles] = useState<File[]>([])
 
   const maxCount = 3
   const maxSizeMB = 3
@@ -21,22 +22,27 @@ export const useFile = () => {
         toast.error(`图片最大${maxSizeMB}MB`)
         return
       }
-
       const imageUrl = URL.createObjectURL(file)
       setImages(prev => [...prev, imageUrl])
-      e.target.value = ''
-      e.target.files = null
+      setImageFiles(prev => [...prev, file])
+    }
+
+    if (imgRef.current) {
+      imgRef.current.value = ''
     }
   }
 
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index))
+    setImageFiles(prev => prev.filter((_, i) => i !== index))
   }
 
   return {
     imgRef,
     images,
+    imageFiles,
     setImages,
+    setImageFiles,
     handleImageChange,
     removeImage
   }

@@ -54,8 +54,8 @@ export interface Comments {
   content: string //评论内容
   createdAt: Date //评论创建时间
   replies?: CommentReplies[] //子评论列表
-  postId?: number //评论文章id
-  userId?: number //评论用户id
+  postId: number //评论文章id
+  userId: number //评论用户id
   images?: string[] //评论图片
 
   user: User //评论用户信息
@@ -99,10 +99,17 @@ export interface MarkPostParams {
   type: 'like' | 'favorite'
 }
 
-//评论提交的数
+//评论提交的数据
 export interface CommentParams {
   userId: number
   postId: number
   content: string
-  images: string[]
+  images?: string[]
+}
+
+//创建帖子提交的数据
+export interface PostParams {
+  content: string
+  images?: string[]
+  authorId: number
 }

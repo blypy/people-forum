@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
-import { getAllPosts, getPostById, getPostByQuery } from '@/api'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { createPost, getAllPosts, getPostById, getPostByQuery } from '@/api'
+import { PostParams } from '@/types'
 
 //获取全部文章
 export function useAllPosts() {
@@ -21,5 +22,11 @@ export function useQueryPost(query: string) {
     queryKey: ['POST-QUERY', query],
     queryFn: () => getPostByQuery(query),
     enabled: !!query
+  })
+}
+
+export function useCreatePost() {
+  return useMutation({
+    mutationFn: (postData: PostParams) => createPost(postData)
   })
 }

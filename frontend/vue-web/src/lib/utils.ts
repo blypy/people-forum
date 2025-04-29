@@ -1,5 +1,6 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { uploadImage } from '@/api'
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -11,4 +12,22 @@ export function formatDate(date: Date) {
     day: 'numeric', //显示日期的数字部分
     year: 'numeric' //显示年份的数字部分
   })
+}
+
+export async function uploadImg(imageFiles: File[]) {
+  const formData = new FormData()
+  imageFiles.forEach(file => {
+    formData.append('images', file)
+  })
+
+  const { files } = await uploadImage(formData)
+  const fileUrl = files.map(file => file.url)
+  return fileUrl
+}
+
+export function formatNumber(num: number): string {
+  if (num >= 10000) {
+    return (num / 10000).toFixed(1).replace(/\.0$/, '') + '万'
+  }
+  return num.toString()
 }

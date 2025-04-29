@@ -15,40 +15,96 @@ import { useUserStore } from '@/stores/useCurrentUserStore'
 import UserAvatar from './UserAvatar'
 import { CommentImage } from './PostImage'
 import { useFile } from '@/hooks/useFile'
+import { useCreatePost } from '@/hooks/usePost'
+import { uploadImg } from '@/lib/utils'
+import { useCreateComment } from '@/hooks/useComment'
+import { useDebounce } from '@/hooks/useDebounce'
 
-const Posting = ({ children, mode }: { children: React.ReactNode; mode: 'post' | 'comment' }) => {
+const Posting = ({
+  children,
+  mode,
+  postId
+}: {
+  children: React.ReactNode
+  mode: 'post' | 'comment'
+  postId?: number
+}) => {
   const [content, setContent] = useState('')
-  const { imgRef, images, handleImageChange, removeImage, setImages } = useFile()
+  const [open, setOpen] = useState(false)
   const { currentUser } = useUserStore()
+  const createComment = useCreateComment()
+  const createPost = useCreatePost()
+  const { imgRef, images, imageFiles, removeImage, setImages, setImageFiles, handleImageChange } = useFile()
 
-  const handleAction = async (formData: FormData) => {
-    const image = formData.get('images') as File
-    const content = formData.get('content') as string
-    console.log(image, content)
+  // 使用防抖hook计算内容长度
+  const debouncedLength = useDebounce(content.trim().length, 500)
 
-    // 请求
+  const handleOpenChange = (isOpen: boolean) => {
+    if (isOpen && !currentUser) {
+      toast.error('请先登录')
+      return
+    }
+    setOpen(isOpen)
+  }
 
-    toast.success('发布成功')
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!currentUser) {
+      toast.error('请先登录')
+      return
+    }
+
+    let fileUrl: string[] = []
+    if (images.length > 0) fileUrl = await uploadImg(imageFiles)
+
+    if (content.trim().length >= 200) {
+      toast.error('内容最多200字')
+      return
+    }
+
+    if (mode === 'post') {
+      createPost.mutate({ content, images: fileUrl || [], authorId: currentUser.id })
+      if (createPost.isError) {
+        toast.error('发布帖子失败')
+        return
+      }
+      toast.success('发布成功')
+    } else if (mode === 'comment' && postId) {
+      createComment.mutate({
+        content,
+        images: fileUrl || [],
+        userId: currentUser.id,
+        postId
+      })
+      if (createComment.isError) {
+        toast.error('回复失败')
+        return
+      }
+      toast.success('回复成功')
+    }
+
+    setOpen(false)
     setImages([])
+    setImageFiles([])
     setContent('')
   }
 
-  if (!currentUser) {
-    toast.error('请先登录')
-    return null
-  }
-
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-xl p-0 border-border bg-card text-card-foreground">
-        <form action={handleAction}>
+        <form onSubmit={handleSubmit}>
           <DialogTitle className="hidden" />
           <DialogDescription className="hidden" />
 
           <DialogHeader className="p-4">
             <div className="flex gap-3 mt-5">
-              <UserAvatar avatar={currentUser?.avatar} name={currentUser?.username} className="size-10" />
+              <UserAvatar
+                avatar={currentUser?.avatar || ''}
+                name={currentUser?.username || ''}
+                className="size-10"
+              />
 
               <div className="w-full max-h-[80vh] overflow-y-auto pr-8">
                 <textarea
@@ -56,7 +112,7 @@ const Posting = ({ children, mode }: { children: React.ReactNode; mode: 'post' |
                   placeholder={mode === 'post' ? '有什么新鲜事?' : '要说些什么'}
                   value={content}
                   onChange={e => setContent(e.target.value)}
-                  name="content"
+                  maxLength={200}
                 />
                 {/* 图片 */}
                 <CommentImage images={images} onRemove={removeImage} />
@@ -79,10 +135,15 @@ const Posting = ({ children, mode }: { children: React.ReactNode; mode: 'post' |
               ref={imgRef}
               className="hidden"
               onChange={handleImageChange}
-              name="images"
             />
-            <Button disabled={!content.trim()} className="rounded-full" type="submit">
-              {mode === 'post' ? '发帖' : '回复'}
+            <Button disabled={!debouncedLength} className="rounded-full" type="submit">
+              {mode === 'post'
+                ? debouncedLength > 0
+                  ? `发帖(${debouncedLength})`
+                  : '发帖'
+                : debouncedLength > 0
+                ? `回复(${debouncedLength})`
+                : '回复'}
             </Button>
           </DialogFooter>
         </form>

@@ -3,19 +3,16 @@ import { Link } from 'react-router'
 import type { Posts } from '@/types'
 import PostAction from './PostAction'
 import { PostImage } from './PostImage'
-import { useUserStore } from '@/stores/useCurrentUserStore'
 import { memo } from 'react'
 import UserAvatar from './UserAvatar'
 
 const PostCard = ({ post }: { post: Posts }) => {
-  const { currentUser } = useUserStore()
   const { author, content, createdAt, id } = post
 
   return (
-    <div className="border-b border-r py-5 border-border hover:bg-secondary/40 transition-colors w-full">
+    <div className="border-b border-r p-5 border-border hover:bg-secondary/40 transition-colors w-full">
       {/* 头像 */}
       <Link to={`/post/${id}`}>
-        <div className="mx-5">
           <div className="flex gap-2">
             <UserAvatar
               avatar={author.avatar}
@@ -37,15 +34,13 @@ const PostCard = ({ post }: { post: Posts }) => {
           </div>
           <PostImage images={post.images} />
           {/* 交互按钮 */}
-          <PostAction
-            comments={post._count.comments}
-            likes={post.likes}
-            favorites={post.favorites}
-            currentUser={currentUser}
-            postId={post.id}
-          />
-        </div>
       </Link>
+      <PostAction
+        comments={post._count.comments}
+        likes={post.likes}
+        favorites={post.favorites}
+        postId={post.id}
+      />
     </div>
   )
 }

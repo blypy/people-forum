@@ -1,4 +1,4 @@
-import type { PostDetails, Posts } from '@/types'
+import type { PostDetails, PostParams, Posts } from '@/types'
 
 //获取帖子数据相关
 export async function getAllPosts(): Promise<{ posts: Posts[] }> {
@@ -27,8 +27,8 @@ export async function getPostByQuery(query: string): Promise<Posts[]> {
 }
 
 //创建帖子
-export async function createPost(postData: { content: string; images: string[]; authorId: number }) {
-  const res = await fetch('http://localhost:3000/comments/reply', {
+export async function createPost(postData: PostParams) {
+  const res = await fetch('http://localhost:3000/posts', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

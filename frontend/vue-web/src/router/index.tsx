@@ -5,6 +5,7 @@ import { createBrowserRouter } from 'react-router'
 import { Suspense } from 'react'
 import { NotFound } from '@/components/NotFound'
 import Loading from '@/components/Loading'
+import { RequireAuth } from '@/components/RequireAuth'
 
 const Home = lazy(() => import('@/pages/layout/home'))
 const PostList = lazy(() => import('@/pages/layout/user/postlist'))
@@ -38,9 +39,11 @@ const router = createBrowserRouter([
       {
         path: '/favorite',
         element: (
-          <Suspense fallback={<Loading />}>
-            <Favorite />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loading />}>
+              <Favorite />
+            </Suspense>
+          </RequireAuth>
         )
       },
       {
@@ -54,9 +57,11 @@ const router = createBrowserRouter([
       {
         path: '/user/:id',
         element: (
-          <Suspense fallback={<Loading />}>
-            <User />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loading />}>
+              <User />
+            </Suspense>
+          </RequireAuth>
         ),
         children: [
           {
