@@ -3,10 +3,10 @@ import Nav from '@/components/Nav'
 
 export default function Layout() {
   return (
-    <div className="xl:w-7xl mx-auto w-full">
+    <div className="mx-auto w-full xl:w-7xl">
       <ScrollRestoration />
       <Nav></Nav>
-      <div className="xl:ml-62 ml-22">
+      <div className="ml-22 xl:ml-62">
         <Outlet />
       </div>
     </div>

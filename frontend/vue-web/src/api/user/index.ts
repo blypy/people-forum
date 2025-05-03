@@ -1,4 +1,4 @@
-import type { MarkPostParams, Posts, User } from '@/types'
+import type { MarkPostParams, Posts, UpdateUserProfileParams, User } from '@/types'
 
 //获取数据相关
 export async function getUserById(userId: number): Promise<User> {
@@ -30,6 +30,25 @@ export async function getUserLikedPosts(userId: number): Promise<{ posts: Posts[
   if (!res.ok) throw new Error('获取用户点赞文章失败')
   const data = await res.json()
   return data
+}
+
+// 更新用户资料
+export async function fetchUpdateUserProfile(profileData: UpdateUserProfileParams): Promise<{ user: User }> {
+  const res = await fetch(`http://localhost:3000/users/${profileData.userId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(profileData)
+  })
+
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(errorData.message || '更新用户资料失败')
+  }
+
+  const userData = await res.json()
+  return userData
 }
 
 //更新操作相关

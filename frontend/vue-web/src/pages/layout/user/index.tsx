@@ -1,13 +1,26 @@
-import { ArrowLeft as arrow, Calendar as time } from 'lucide-react'
-import { Link, useParams, useNavigate } from 'react-router'
 import { memo, useState } from 'react'
-import type { User } from '@/types'
-import { formatDate } from '@/lib/utils'
+import { Link, useParams, useNavigate } from 'react-router'
 import { Outlet } from 'react-router'
-import { Button } from '@/components/ui/button'
-import { useUserById } from '@/hooks/useUser'
+import { ArrowLeft as arrow, Calendar as time } from 'lucide-react'
+import Loading from '@/components/Loading'
 import { ItemNotFound } from '@/components/NotFound'
 import UserAvatar from '@/components/UserAvatar'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose
+} from '@/components/ui/dialog'
+import EditProfileForm from '@/components/EditProfileForm'
+import { useUserById } from '@/hooks/useUser'
+import { useUserStore } from '@/stores/useCurrentUserStore'
+import { formatDate } from '@/lib/utils'
+import type { User } from '@/types'
 
 const ArrowLeft = memo(arrow)
 const Calendar = memo(time)
@@ -15,62 +28,80 @@ const Calendar = memo(time)
 const TopLink = ({ name, postCount }: { name: string; postCount: number }) => {
   const navigate = useNavigate()
   return (
-    <div className="sticky top-0 z-10 bg-background p-4 border-b border-border flex items-center">
+    <div className="bg-background border-border sticky top-0 z-10 flex items-center border-b p-4">
       <Button className="mr-6 rounded-full" onClick={() => navigate(-1)} variant={'ghost'} size={'icon'}>
         <ArrowLeft className="size-5" />
       </Button>
       <div>
         <h1 className="text-xl font-bold">{name}</h1>
-        <p className="text-sm text-muted-foreground">{postCount}条帖子</p>
+        <p className="text-muted-foreground text-sm">{postCount}条帖子</p>
       </div>
     </div>
   )
 }
 
 const UserProfile = memo(({ user }: { user: User }) => {
-  return (
-    <>
-      {/* 顶部导航 */}
-      <TopLink name={user.username} postCount={user._count.posts} />
+  const currentUser = useUserStore(state => state.currentUser)
+  const isOwnProfile = currentUser?.id === user.id
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
 
-      {/* 封面图 */}
+  return (
+    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
       <div className="h-48 bg-gradient-to-r from-blue-400 to-purple-500"></div>
 
-      {/* 个人信息 */}
-      <div className="p-4 border-b border-border relative">
-        {/* 头像 */}
-        <div className="absolute -top-16 left-4">
-          <UserAvatar
-            name={user.username}
-            avatar={user.avatar}
-            className="h-32 w-32 border-4 border-background"
-          />
+      <div className="border-border relative border-b p-4">
+        <div className="absolute -top-16 left-4 flex items-end gap-4">
+          <UserAvatar name={user.username} avatar={user.avatar} className="border-background h-32 w-32 border-4" />
         </div>
-        {/* 用户名和简介 */}
-        <div className="mt-15">
+        {isOwnProfile && (
+          <DialogTrigger asChild>
+            <Button variant="outline" className="absolute top-4 right-4 rounded-full">
+              编辑个人资料
+            </Button>
+          </DialogTrigger>
+        )}
+        <div className="mt-16">
           <h2 className="text-2xl font-bold">{user?.username}</h2>
           <p className="text-muted-foreground">{user?.handle}</p>
 
-          <p className="my-3">{user?.bio}</p>
-          <div className="flex items-center gap-1">
+          <p className="my-3 whitespace-pre-wrap">{user?.bio || '暂无简介'}</p>
+          <div className="text-muted-foreground flex items-center gap-1">
             <Calendar className="size-4" />
             <span>加入于 {formatDate(user?.createdAt || new Date())}</span>
           </div>
         </div>
       </div>
-    </>
+
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>编辑个人资料</DialogTitle>
+          <DialogDescription>在这里修改你的个人信息。点击保存以应用更改。</DialogDescription>
+        </DialogHeader>
+        <EditProfileForm user={currentUser!} onSubmitSuccess={() => setIsEditDialogOpen(false)} />
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              取消
+            </Button>
+          </DialogClose>
+          <Button type="submit" form="edit-profile-form">
+            保存更改
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 })
 
 const ActiveTabBar = () => {
   const [activeTab, setActiveTab] = useState('posts')
   return (
-    <div className="border-b border-border">
+    <div className="border-border border-b">
       <div className="flex">
         <Link
           to={''}
-          className={`flex-1 py-3 px-4 font-medium text-center  ${
-            activeTab === 'posts' ? 'border-b-2 border-primary' : 'text-muted-foreground'
+          className={`flex-1 px-4 py-3 text-center font-medium ${
+            activeTab === 'posts' ? 'border-primary border-b-2' : 'text-muted-foreground'
           }`}
           onClick={() => setActiveTab('posts')}
         >
@@ -78,8 +109,8 @@ const ActiveTabBar = () => {
         </Link>
         <Link
           to={'like'}
-          className={`flex-1 py-3 px-4 font-medium text-center ${
-            activeTab === 'likes' ? 'border-b-2 border-primary' : 'text-muted-foreground'
+          className={`flex-1 px-4 py-3 text-center font-medium ${
+            activeTab === 'likes' ? 'border-primary border-b-2' : 'text-muted-foreground'
           }`}
           onClick={() => setActiveTab('likes')}
         >
@@ -94,11 +125,12 @@ export default function User() {
   const { id } = useParams() //userid
   const { data: user, isError, isLoading } = useUserById(Number(id))
   // 用户不存在
-  if (isLoading) return
+  if (isLoading) return <Loading />
   if (isError || !user) return <ItemNotFound type="user" />
 
   return (
-    <div className="mx-auto border-r border-border min-h-screen">
+    <div className="border-border mx-auto min-h-screen border-r">
+      <TopLink name={user.username} postCount={user._count.posts} />
       <UserProfile user={user} />
       <ActiveTabBar />
       <Outlet />

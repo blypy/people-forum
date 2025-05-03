@@ -1,5 +1,5 @@
-import AuthForm from '@/components/AuthForm'
+import RegisterForm from '@/components/RegisterForm'
 
 export default function Register() {
-  return <AuthForm isLogin={false} />
+  return <RegisterForm />
 }

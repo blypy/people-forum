@@ -10,13 +10,9 @@ export default function Favorite() {
   return (
     <>
       {posts.length > 0 ? (
-        <div>
-          {posts?.map(post => (
-            <PostCard post={post} key={post.id} />
-          ))}
-        </div>
+        <div>{posts?.map(post => <PostCard post={post} key={post.id} />)}</div>
       ) : (
-        <div className="flex flex-col items-center justify-center h-screen text-2xl">
+        <div className="flex h-screen flex-col items-center justify-center text-2xl">
           <p>还没收藏过帖子</p>
         </div>
       )}

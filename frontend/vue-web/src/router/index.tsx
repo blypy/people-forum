@@ -1,11 +1,12 @@
 import { lazy } from 'react'
+import { Suspense } from 'react'
+import { createBrowserRouter } from 'react-router'
+import Loading from '@/components/Loading'
+import { NotFound } from '@/components/NotFound'
+import { RequireAuth } from '@/components/RequireAuth'
+import { QUERY_TAG } from '@/lib/query'
 import Login from '@/pages/auth/login'
 import Register from '@/pages/auth/register'
-import { createBrowserRouter } from 'react-router'
-import { Suspense } from 'react'
-import { NotFound } from '@/components/NotFound'
-import Loading from '@/components/Loading'
-import { RequireAuth } from '@/components/RequireAuth'
 
 const Home = lazy(() => import('@/pages/layout/home'))
 const PostList = lazy(() => import('@/pages/layout/user/postlist'))
@@ -66,16 +67,12 @@ const router = createBrowserRouter([
         children: [
           {
             path: '',
-            loader: () => {
-              return 'USER-POSTS'
-            },
+            loader: () => QUERY_TAG.USER.POST,
             element: <PostList />
           },
           {
             path: 'like',
-            loader: () => {
-              return 'USER-LIKES'
-            },
+            loader: () => QUERY_TAG.USER.LIKE,
             element: <PostList />
           }
         ]

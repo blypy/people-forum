@@ -16,7 +16,11 @@ export const useUserStore = create<CurrentUserStore>()(
       currentUser: null,
       isLoggedIn: false,
       setUser: (currentUser: User) => set({ currentUser, isLoggedIn: true }),
-      clearUser: () => set({ currentUser: null, isLoggedIn: false })
+
+      clearUser: () => {
+        set({ currentUser: null, isLoggedIn: false })
+        localStorage.removeItem('currentUser-storage')
+      }
     }),
     {
       name: 'currentUser-storage'

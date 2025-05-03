@@ -1,13 +1,10 @@
 import { useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-export const useFile = () => {
+export const useFile = (maxCount = 3, maxSizeMB = 3) => {
   const imgRef = useRef<HTMLInputElement>(null)
   const [images, setImages] = useState<string[]>([])
   const [imageFiles, setImageFiles] = useState<File[]>([])
-
-  const maxCount = 3
-  const maxSizeMB = 3
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (images.length >= maxCount) {
@@ -32,9 +29,9 @@ export const useFile = () => {
     }
   }
 
-  const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index))
-    setImageFiles(prev => prev.filter((_, i) => i !== index))
+  const removeImage = (index?: number) => {
+    setImages(index ? prev => prev.filter((_, i) => i !== index) : [])
+    setImageFiles(index ? prev => prev.filter((_, i) => i !== index) : [])
   }
 
   return {

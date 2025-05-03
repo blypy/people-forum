@@ -5,17 +5,18 @@
 类型信息说明见：/src/types/index.ts
 
 ### 登录：
+
 ```json
 {
-    "success": true,
-    "message": "登录成功",
-    "user": {
-        "id": 5,
-        "username": "113",
-        "email": "113@example.com",
-        "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=113",
-    },
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiaWF0IjoxNzQ1NzQwNDQ1LCJleHAiOjE3NDU4MjY4NDV9.o2sDZmQAqK0NKzoUxfskMbKunZpDWna3TXwgDN81A88" //也可以是session
+  "success": true,
+  "message": "登录成功",
+  "user": {
+    "id": 5,
+    "username": "113",
+    "email": "113@example.com",
+    "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=113"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiaWF0IjoxNzQ1NzQwNDQ1LCJleHAiOjE3NDU4MjY4NDV9.o2sDZmQAqK0NKzoUxfskMbKunZpDWna3TXwgDN81A88" //也可以是session
 }
 ```
 
@@ -160,6 +161,7 @@
         "createdAt": "2025-04-24T15:53:14.598Z",
         "postId": 1,
         "userId": 2,
+        "images": [],
         "user": {
           "id": 2,
           "username": "李四",
@@ -174,6 +176,7 @@
             "postId": 1,
             "userId": 3,
             "parentId": 1,
+            "images": [],
             "user": {
               "id": 3,
               "username": "王五",

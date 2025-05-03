@@ -1,9 +1,9 @@
-import { Search as Icon } from 'lucide-react'
-import PostCard from '@/components/PostCard'
-import { useNavigate, useSearchParams } from 'react-router'
-import { toast } from 'sonner'
-import { useQueryPost } from '@/hooks/usePost'
 import { memo } from 'react'
+import { useNavigate, useSearchParams } from 'react-router'
+import { Search as Icon } from 'lucide-react'
+import { toast } from 'sonner'
+import PostCard from '@/components/PostCard'
+import { useQueryPost } from '@/hooks/usePost'
 
 const SearchIcon = memo(Icon)
 
@@ -28,17 +28,17 @@ const Search = () => {
   }
 
   return (
-    <div className="flex flex-col h-full bg-background text-foreground">
+    <div className="bg-background text-foreground flex h-full flex-col">
       {/* 搜索栏 */}
       <form
-        className="sticky top-0 p-4 border-r border-b z-10 bg-background flex justify-between items-center"
+        className="bg-background sticky top-0 z-10 flex items-center justify-between border-r border-b p-4"
         action={handleSubmit}
       >
-        <div className="relative flex-1 mr-2">
-          <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2" size={20} />
+        <div className="relative mr-2 flex-1">
+          <SearchIcon className="absolute top-1/2 left-3 -translate-y-1/2 transform" size={20} />
           <input
             placeholder="搜索"
-            className="pl-10 h-12 rounded-full bg-muted border-none text-lg w-full"
+            className="bg-muted h-12 w-full rounded-full border-none pl-10 text-lg"
             name="content"
             defaultValue={query}
           />
@@ -46,19 +46,15 @@ const Search = () => {
       </form>
 
       {query ? (
-        <div>
-          {posts?.map(post => (
-            <PostCard post={post} key={post.id} />
-          ))}
-        </div>
+        <div>{posts?.map(post => <PostCard post={post} key={post.id} />)}</div>
       ) : (
-        <div className="flex flex-col items-center justify-center min-h-[80vh] text-2xl">
+        <div className="flex min-h-[80vh] flex-col items-center justify-center text-2xl">
           <p>要搜点什么</p>
         </div>
       )}
 
       {posts?.length === 0 && (
-        <div className="flex flex-col items-center justify-center min-h-[80vh] text-2xl">
+        <div className="flex min-h-[80vh] flex-col items-center justify-center text-2xl">
           <p>暂无内容</p>
         </div>
       )}

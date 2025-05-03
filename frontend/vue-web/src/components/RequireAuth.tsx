@@ -10,7 +10,6 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   const location = useLocation()
 
   if (!isAuth) {
-    // 跳转到登录页，并保存当前想访问的路径
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 

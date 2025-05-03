@@ -1,12 +1,13 @@
-import { Comments } from '@/types'
 import { useState, useRef } from 'react'
 import { Link } from 'react-router'
-import { formatDate } from '@/lib/utils'
-import { Button } from './ui/button'
 import { ChevronUp, ChevronDown, MessageSquareMore } from 'lucide-react'
-import UserAvatar from './UserAvatar'
-import { PostImage } from './PostImage'
 import CommentForm from './CommentForm'
+import { PostImage } from './PostImage'
+import UserAvatar from './UserAvatar'
+import { Button } from './ui/button'
+import { formatDate } from '@/lib/utils'
+import { Comments } from '@/types'
+
 const CommentList = ({ comment }: { comment: Comments }) => {
   const [showReplies, setShowReplies] = useState(false) //显示子评论状态
   const [showReplyInput, setShowReplyInput] = useState(false) //控制评论回复框显示状态
@@ -14,16 +15,21 @@ const CommentList = ({ comment }: { comment: Comments }) => {
   const hasReplies = comment.replies && comment.replies.length > 0 //判断子评论是否存在
 
   return (
-    <div className="p-4 border-b border-border">
+    <div className="border-border border-b p-4">
       {/* 评论内容 */}
       <div className="flex gap-3">
         <Link to={`/user/${comment.user.id}`}>
-          <UserAvatar avatar={comment.user.avatar} name={comment.user.avatar} className="size-10" />
+          <UserAvatar
+            avatar={comment.user.avatar}
+            name={comment.user.username}
+            className="size-10"
+            userId={comment.user.id}
+          />
         </Link>
         <div className="flex-1">
           <div className="flex items-center">
-            <span className="font-bold mr-1">{comment.user.username}</span>
-            <span className="text-muted-foreground">{`@${comment.user.handle}`}</span>
+            <span className="mr-1 font-bold">{comment.user.username}</span>
+            <span className="text-muted-foreground">{comment.user.handle}</span>
             <span className="text-muted-foreground mx-1">·</span>
             <span className="text-muted-foreground">{formatDate(comment.createdAt)}</span>
           </div>
@@ -31,11 +37,11 @@ const CommentList = ({ comment }: { comment: Comments }) => {
           <PostImage images={comment.images} />
 
           {/* 回复评论图标 */}
-          <div className="flex items-center text-muted-foreground">
+          <div className="text-muted-foreground flex items-center">
             <Button
               variant="ghost"
               size="sm"
-              className="rounded-full h-auto hover:text-primary py-1 -ml-2"
+              className="hover:text-primary -ml-2 h-auto rounded-full py-1"
               onClick={() => {
                 setShowReplyInput(prev => !prev)
                 setTimeout(() => {
@@ -52,18 +58,18 @@ const CommentList = ({ comment }: { comment: Comments }) => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="rounded-full p-0 h-auto text-muted-foreground hover:text-primary"
+                className="text-muted-foreground hover:text-primary h-auto rounded-full p-0"
                 onClick={() => setShowReplies(!showReplies)}
               >
-                <span className="text-xs flex items-center">
+                <span className="flex items-center text-xs">
                   {showReplies ? (
                     <>
-                      <ChevronUp className="size-4 mr-1" />
+                      <ChevronUp className="mr-1 size-4" />
                       隐藏回复
                     </>
                   ) : (
                     <>
-                      <ChevronDown className="size-4 mr-1" />
+                      <ChevronDown className="mr-1 size-4" />
                       查看{comment.replies?.length}条回复
                     </>
                   )}
@@ -76,7 +82,7 @@ const CommentList = ({ comment }: { comment: Comments }) => {
           {showReplyInput && (
             <CommentForm
               ref={commentFormRef}
-              className="mt-3 pl-2 border-l-2 border-border"
+              className="border-border mt-3 border-l-2 pl-2"
               type="reply"
               postId={comment.postId}
               commentId={comment.id}
@@ -86,18 +92,18 @@ const CommentList = ({ comment }: { comment: Comments }) => {
 
           {/* 子评论列表 */}
           {hasReplies && showReplies && (
-            <div className="mt-3 space-y-3 pl-2 border-l-2 border-border">
+            <div className="border-border mt-3 space-y-3 border-l-2 pl-2">
               {comment.replies?.map(reply => (
                 <div key={reply.id} className="flex gap-2 pt-3">
                   <Link to={`/user/${reply.user.id}`}>
-                    <UserAvatar avatar={reply.user.avatar} name={reply.user.avatar} className="siez-10" />
+                    <UserAvatar avatar={reply.user.avatar} name={reply.user.username} className="siez-10" />
                   </Link>
                   <div className="flex-1">
-                    <div className="flex items-center flex-wrap">
-                      <span className="font-semibold text-sm mr-1">{reply.user.username}</span>
-                      <span className="text-muted-foreground text-xs">{`@${reply.user.handle}`}</span>
-                      <span className="text-muted-foreground text-xs mx-1">·</span>
-                      <span className="text-muted-foreground text-xs">{formatDate(reply.createdAt)}</span>
+                    <div className="flex flex-wrap items-center">
+                      <span className="mr-1 text-sm font-semibold">{reply.user.username}</span>
+                      <span className="text-xs">{reply.user.handle}</span>
+                      <span className="mx-1 text-xs">·</span>
+                      <span className="text-xs">{formatDate(reply.createdAt)}</span>
                     </div>
                     <p className="mt-1 text-sm">{reply.content}</p>
                     <PostImage images={reply.images} />
@@ -106,7 +112,7 @@ const CommentList = ({ comment }: { comment: Comments }) => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="rounded-full h-auto mt-1 hover:text-primary -ml-2 py-1"
+                      className="hover:text-primary mt-1 -ml-2 h-auto rounded-full py-1"
                       onClick={() => {
                         setShowReplyInput(true)
                         commentFormRef.current?.focus()

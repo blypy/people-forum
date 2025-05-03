@@ -1,17 +1,17 @@
-import { cn } from '@/lib/utils'
 import { useState } from 'react'
 import { X, Loader } from 'lucide-react'
 import { Button } from './ui/button'
+import { cn } from '@/lib/utils'
 
 const PreviewImage = ({ src, onClose }: { src: string; onClose: () => void }) => {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80" onClick={onClose}>
-      <div className="relative max-w-4xl max-h-[80vh] p-2" onClick={e => e.stopPropagation()}>
-        <img src={src} alt="预览图片" className="object-contain max-h-[80vh] max-w-full" />
+    <div className="bg-background/80 fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
+      <div className="relative max-h-[80vh] max-w-4xl p-2" onClick={e => e.stopPropagation()}>
+        <img src={src} alt="预览图片" className="max-h-[80vh] max-w-full object-contain" />
         <Button
           size="icon"
           variant="ghost"
-          className="rounded-full absolute top-4 right-4 bg-background/80"
+          className="bg-background/80 absolute top-4 right-4 rounded-full"
           onClick={e => {
             e.preventDefault()
             onClose()
@@ -28,16 +28,16 @@ const Image = ({ src, alt, onClick }: { src: string; alt: string; onClick?: () =
   const [isLoading, setIsLoading] = useState(true)
 
   return (
-    <div className="w-full h-full">
+    <div className="h-full w-full">
       {isLoading && (
-        <div className="flex items-center justify-center bg-background h-100">
-          <Loader className="animate-spin size-6" style={{ animationDuration: '2000ms' }} />
+        <div className="bg-background flex h-100 items-center justify-center">
+          <Loader className="size-6 animate-spin" style={{ animationDuration: '2000ms' }} />
         </div>
       )}
       <img
         src={src}
         alt={alt}
-        className="object-cover h-full w-full hover:opacity-80 transition-opacity cursor-pointer"
+        className="h-full w-full cursor-pointer object-cover transition-opacity hover:opacity-80"
         loading="lazy"
         onLoad={() => setIsLoading(false)}
         onError={() => setIsLoading(false)}
@@ -58,13 +58,13 @@ const PostImage = ({ images }: { images?: string[] }) => {
         <div
           className={cn(
             'grid gap-2',
-            images.length === 1 ? 'grid-cols-1 w-xl' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
+            images.length === 1 ? 'w-xl grid-cols-1' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
           )}
         >
           {images?.map((img, index) => (
             <div
               key={index}
-              className="relative rounded-2xl border-2 border-border overflow-hidden"
+              className="border-border relative overflow-hidden rounded-2xl border-2"
               onClick={e => e.preventDefault()}
             >
               <Image
@@ -99,21 +99,17 @@ const CommentImage = ({
     <>
       <div
         className={cn(
-          'grid mt-3 gap-2',
-          images.length === 1
-            ? `grid-cols-1 ${className}`
-            : images.length === 2
-            ? 'grid-cols-2'
-            : 'grid-cols-3'
+          'mt-3 grid gap-2',
+          images.length === 1 ? `grid-cols-1 ${className}` : images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
         )}
       >
         {images.map((img, index) => (
-          <div key={index} className="relative rounded-xl overflow-hidden border border-border">
-            <img src={img} alt="" className="w-full h-full object-cover" onClick={e => e.stopPropagation()} />
+          <div key={index} className="border-border relative overflow-hidden rounded-xl border">
+            <img src={img} alt="" className="h-full w-full object-cover" onClick={e => e.stopPropagation()} />
             <Button
               size="icon"
               variant="ghost"
-              className="rounded-full absolute top-2 right-2 bg-background/80 size-7"
+              className="bg-background/80 absolute top-2 right-2 size-7 rounded-full"
               type="button"
               onClick={e => {
                 e.stopPropagation()

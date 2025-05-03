@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useNavigate } from 'react-router'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 const UserAvatar = ({
   avatar,
@@ -15,7 +15,7 @@ const UserAvatar = ({
   const navigate = useNavigate()
   return (
     <Avatar
-      className={`${className} hover:scale-110 transition-transform`}
+      className={`${className}`}
       onClick={e => {
         e.preventDefault()
         if (userId) navigate(`/user/${userId}`)

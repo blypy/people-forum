@@ -6,6 +6,7 @@ export * from './auth'
 interface FileResponse {
   success: boolean
   files: { url: string }[]
+  message: string
 }
 
 export async function uploadImage(formdata: FormData): Promise<FileResponse> {
@@ -13,7 +14,5 @@ export async function uploadImage(formdata: FormData): Promise<FileResponse> {
     method: 'POST',
     body: formdata
   })
-  if (!res.ok) throw new Error('上传图片失败')
-  const data = await res.json() //返回图片地址
-  return data
+  return await res.json()
 }

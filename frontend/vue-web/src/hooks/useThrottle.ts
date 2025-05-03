@@ -1,26 +1,23 @@
-import { useState, useEffect, useRef } from 'react'
+import { useRef } from 'react'
 
 // 节流Hook
-export function useThrottle<T>(value: T, delay: number = 1000): T {
-  const [throttledValue, setThrottledValue] = useState<T>(value)
-  const lastExecutedRef = useRef<number>(0)
+export function useThrottle() {
+  const throttleTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const isThrottlingRef = useRef<boolean>(false)
 
-  useEffect(() => {
-    const now = Date.now()
-    const timeElapsed = now - lastExecutedRef.current
-    
-    if (timeElapsed >= delay) {
-      setThrottledValue(value)
-      lastExecutedRef.current = now
-    } else {
-      const timerId = setTimeout(() => {
-        setThrottledValue(value)
-        lastExecutedRef.current = Date.now()
-      }, delay - timeElapsed)
-      
-      return () => clearTimeout(timerId)
-    }
-  }, [value, delay])
+  const throttle = (callback: () => void, delay: number = 500) => {
+    if (isThrottlingRef.current) return
 
-  return throttledValue
-} 
+    isThrottlingRef.current = true
+    callback()
+
+    throttleTimerRef.current = setTimeout(() => {
+      isThrottlingRef.current = false
+    }, delay)
+  }
+
+  return {
+    isThrottlingRef,
+    throttle
+  }
+}

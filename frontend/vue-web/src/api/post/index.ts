@@ -27,7 +27,7 @@ export async function getPostByQuery(query: string): Promise<Posts[]> {
 }
 
 //创建帖子
-export async function createPost(postData: PostParams) {
+export async function fetchCreatePost(postData: PostParams): Promise<{ msg: string }> {
   const res = await fetch('http://localhost:3000/posts', {
     method: 'POST',
     headers: {
@@ -35,7 +35,10 @@ export async function createPost(postData: PostParams) {
     },
     body: JSON.stringify(postData)
   })
-  if (!res.ok) throw new Error('回复失败')
+  if (!res.ok) {
+    const errorData = await res.json()
+    throw new Error(errorData.message)
+  }
   const data = await res.json()
   return data
 }

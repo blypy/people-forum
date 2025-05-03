@@ -5,23 +5,27 @@ import {
   getUserFavoritePosts,
   getUserLikedPosts,
   markPost,
-  unMarkPost
+  unMarkPost,
+  fetchUpdateUserProfile
 } from '@/api'
-import { MarkPostParams } from '@/types'
+import { QUERY_TAG } from '@/lib/query'
+import { MarkPostParams, UpdateUserProfileParams } from '@/types'
+import queryClient from '@/lib/query'
 
 //根据用户id获取用户信息
 export function useUserById(userId: number) {
   return useQuery({
-    queryKey: ['USER-PROFILE', userId],
+    queryKey: [QUERY_TAG.USER.PROFILE, userId],
     queryFn: () => getUserById(userId),
-    enabled: !!userId
+    enabled: !!userId,
+    retry: false
   })
 }
 
 //根据用户id获取用户收藏的帖子
 export function useUserFavoritePosts(userId: number) {
   return useQuery({
-    queryKey: ['USER-FAVORITE', userId],
+    queryKey: [QUERY_TAG.USER.FAVORITE, userId],
     queryFn: () => getUserFavoritePosts(userId),
     enabled: !!userId
   })
@@ -31,9 +35,9 @@ export function useUserFavoritePosts(userId: number) {
 export function useUserPostsByKey(key: string, userId: number) {
   const queryFn = () => {
     switch (key) {
-      case 'USER-POSTS':
+      case QUERY_TAG.USER.POST:
         return getUserPosts(userId) //用户发布
-      case 'USER-LIKES':
+      case QUERY_TAG.USER.LIKE:
         return getUserLikedPosts(userId) //用户喜欢
     }
   }
@@ -42,6 +46,16 @@ export function useUserPostsByKey(key: string, userId: number) {
     queryKey: [key, userId],
     queryFn,
     enabled: !!userId
+  })
+}
+
+// 更新用户资料
+export function useUpdateUserProfile() {
+  return useMutation({
+    mutationFn: (profileData: UpdateUserProfileParams) => fetchUpdateUserProfile(profileData),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_TAG.USER.PROFILE, variables.userId] })
+    }
   })
 }
 

@@ -1,12 +1,12 @@
+import { memo } from 'react'
+import { NavLink, Link } from 'react-router'
+import { House, Search, Bookmark, CircleUserRound, MoreHorizontal } from 'lucide-react'
 import DropMenu from './DropMenu'
 import Posting from './Posting'
+import UserAvatar from './UserAvatar'
 import { Button } from './ui/button'
 import { ThemeToggle } from './ui/theme-toggle'
 import { useUserStore } from '@/stores/useCurrentUserStore'
-import { NavLink, Link } from 'react-router'
-import UserAvatar from './UserAvatar'
-import { House, Search, Bookmark, CircleUserRound, MoreHorizontal } from 'lucide-react'
-import { memo } from 'react'
 import { User } from '@/types'
 
 const nav = [
@@ -34,13 +34,13 @@ const nav = [
 
 const NavLinks = memo(function NavLinks({ currentUser }: { currentUser: User | null }) {
   return (
-    <ul className="text-2xl flex flex-col gap-4">
+    <ul className="flex flex-col gap-4 text-2xl">
       {nav.map(item => (
         <li key={item.link}>
           <NavLink
             to={item.link === '/user' ? `/user/${currentUser?.id}` : item.link}
             className={({ isActive }) =>
-              `flex items-center gap-5 cursor-pointer hover:bg-secondary active:bg-secondary rounded-full py-2 px-4 transition-colors ${
+              `hover:bg-secondary active:bg-secondary flex cursor-pointer items-center gap-5 rounded-full px-4 py-2 transition-colors ${
                 isActive ? 'font-bold' : ''
               }`
             }
@@ -65,13 +65,10 @@ const UserMenu = memo(function UserMenu({ currentUser }: { currentUser: User | n
 
   return (
     <DropMenu>
-      <div className="flex items-center gap-2 hover:bg-secondary active:bg-secondary/80 rounded-full py-2 px-4 transition-colors">
-        <UserAvatar
-          avatar={currentUser.avatar}
-          name={currentUser.username}
-        />
-        <p className="xl:block hidden">{currentUser.username}</p>
-        <MoreHorizontal className="xl:block hidden text-xl ml-5 self-end" />
+      <div className="hover:bg-secondary active:bg-secondary/80 flex items-center gap-2 rounded-full px-4 py-2 transition-colors">
+        <UserAvatar avatar={currentUser.avatar} name={currentUser.username} />
+        <p className="hidden xl:block">{currentUser.username}</p>
+        <MoreHorizontal className="ml-5 hidden self-end text-xl xl:block" />
       </div>
     </DropMenu>
   )
@@ -80,11 +77,11 @@ const UserMenu = memo(function UserMenu({ currentUser }: { currentUser: User | n
 const Nav = () => {
   const currentUser = useUserStore(state => state.currentUser)
   return (
-    <nav className="flex flex-col gap-4 xl:w-62 w-22 h-screen p-4 border-r fixed bg-background text-foreground">
+    <nav className="bg-background text-foreground fixed flex h-screen w-22 flex-col gap-4 border-r p-4 xl:w-62">
       {/* logo */}
       <Link to={'/'}>
         <h1>
-          <img src="/X.png" alt="logo" className="size-15 object-cover xl:-ml-2 -ml-1" />
+          <img src="/X.png" alt="logo" className="-ml-1 size-15 object-cover xl:-ml-2" />
         </h1>
       </Link>
 
@@ -94,15 +91,15 @@ const Nav = () => {
       {/* 发布按钮 */}
       <div className="flex justify-center xl:block">
         <Posting mode={'post'}>
-          <Button className="xl:w-full w-12 h-12 xl:h-auto rounded-full">
+          <Button className="h-12 w-12 rounded-full xl:h-auto xl:w-full">
             <span className="hidden xl:inline">发布</span>
-            <span className="xl:hidden text-2xl">+</span>
+            <span className="text-2xl xl:hidden">+</span>
           </Button>
         </Posting>
       </div>
 
       {/* 个人信息 */}
-      <div className="flex mt-auto items-center">
+      <div className="mt-auto flex items-center">
         <UserMenu currentUser={currentUser} />
         <ThemeToggle />
       </div>

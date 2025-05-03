@@ -1,3 +1,7 @@
+import { useState } from 'react'
+import { Image } from 'lucide-react'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -7,18 +11,14 @@ import {
   DialogTitle,
   DialogDescription
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Image } from 'lucide-react'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { useUserStore } from '@/stores/useCurrentUserStore'
-import UserAvatar from './UserAvatar'
 import { CommentImage } from './PostImage'
-import { useFile } from '@/hooks/useFile'
-import { useCreatePost } from '@/hooks/usePost'
-import { uploadImg } from '@/lib/utils'
+import UserAvatar from './UserAvatar'
 import { useCreateComment } from '@/hooks/useComment'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useFile } from '@/hooks/useFile'
+import { useCreatePost } from '@/hooks/usePost'
+import { useUserStore } from '@/stores/useCurrentUserStore'
+import { useUpload } from '@/hooks/useUpload'
 
 const Posting = ({
   children,
@@ -32,83 +32,79 @@ const Posting = ({
   const [content, setContent] = useState('')
   const [open, setOpen] = useState(false)
   const { currentUser } = useUserStore()
-  const createComment = useCreateComment()
-  const createPost = useCreatePost()
-  const { imgRef, images, imageFiles, removeImage, setImages, setImageFiles, handleImageChange } = useFile()
-
-  // 使用防抖hook计算内容长度
+  const createCommentMutation = useCreateComment()
+  const createPostMutation = useCreatePost()
   const debouncedLength = useDebounce(content.trim().length, 500)
+  const { imgRef, images, imageFiles, removeImage, handleImageChange } = useFile()
+  const { uploadFiles } = useUpload()
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (isOpen && !currentUser) {
-      toast.error('请先登录')
-      return
-    }
+    if (isOpen && !currentUser) return toast.error('请先登录')
     setOpen(isOpen)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!currentUser) {
-      toast.error('请先登录')
-      return
-    }
-
-    let fileUrl: string[] = []
-    if (images.length > 0) fileUrl = await uploadImg(imageFiles)
-
     if (content.trim().length >= 200) {
       toast.error('内容最多200字')
       return
     }
-
-    if (mode === 'post') {
-      createPost.mutate({ content, images: fileUrl || [], authorId: currentUser.id })
-      if (createPost.isError) {
-        toast.error('发布帖子失败')
-        return
-      }
-      toast.success('发布成功')
-    } else if (mode === 'comment' && postId) {
-      createComment.mutate({
-        content,
-        images: fileUrl || [],
-        userId: currentUser.id,
-        postId
-      })
-      if (createComment.isError) {
-        toast.error('回复失败')
-        return
-      }
-      toast.success('回复成功')
+    let fileUrl: string[] = []
+    if (images.length > 0) {
+      const uploadResult = await uploadFiles(imageFiles)
+      if (!uploadResult.success) return toast.error(uploadResult.message || '上传图片失败')
+      fileUrl = uploadResult.urls
     }
 
+    toast.promise(
+      async () => {
+        let msg = ''
+        if (mode === 'post') {
+          await createPostMutation.mutateAsync({ content, images: fileUrl, authorId: currentUser!.id })
+          msg = '发布成功'
+        }
+        if (mode === 'comment' && postId) {
+          await createCommentMutation.mutateAsync({
+            content,
+            images: fileUrl,
+            userId: currentUser!.id,
+            postId
+          })
+          msg = '评论成功'
+        }
+        return msg
+      },
+      {
+        loading: '发布中...',
+        success: msg => msg,
+        error: err => {
+          const msg = err instanceof Error ? err.message : '发布失败'
+          return mode === 'post' ? `发布失败：${msg}` : `评论失败：${msg}`
+        }
+      }
+    )
+
     setOpen(false)
-    setImages([])
-    setImageFiles([])
     setContent('')
+    removeImage()
   }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-xl p-0 border-border bg-card text-card-foreground">
+      <DialogContent className="border-border bg-card text-card-foreground p-0 sm:max-w-xl">
         <form onSubmit={handleSubmit}>
           <DialogTitle className="hidden" />
           <DialogDescription className="hidden" />
 
           <DialogHeader className="p-4">
-            <div className="flex gap-3 mt-5">
-              <UserAvatar
-                avatar={currentUser?.avatar || ''}
-                name={currentUser?.username || ''}
-                className="size-10"
-              />
+            <div className="mt-5 flex gap-3">
+              <UserAvatar avatar={currentUser?.avatar || ''} name={currentUser?.username || ''} className="size-10" />
 
-              <div className="w-full max-h-[80vh] overflow-y-auto pr-8">
+              <div className="max-h-[80vh] w-full overflow-y-auto pr-8">
                 <textarea
-                  className="w-full resize-none outline-none text-xl min-h-20 mt-1 bg-transparent"
+                  className="mt-1 min-h-20 w-full resize-none bg-transparent text-xl outline-none"
                   placeholder={mode === 'post' ? '有什么新鲜事?' : '要说些什么'}
                   value={content}
                   onChange={e => setContent(e.target.value)}
@@ -119,31 +115,25 @@ const Posting = ({
               </div>
             </div>
           </DialogHeader>
-          <DialogFooter className="p-4 border-t border-border flex-row justify-between">
+          <DialogFooter className="border-border flex-row justify-between border-t p-4">
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full size-8"
+              className="size-8 rounded-full"
               type="button"
               onClick={() => imgRef.current?.click()}
             >
               <Image className="size-5" />
             </Button>
-            <input
-              type="file"
-              accept="image/*"
-              ref={imgRef}
-              className="hidden"
-              onChange={handleImageChange}
-            />
+            <input type="file" accept="image/*" ref={imgRef} className="hidden" onChange={handleImageChange} />
             <Button disabled={!debouncedLength} className="rounded-full" type="submit">
               {mode === 'post'
                 ? debouncedLength > 0
                   ? `发帖(${debouncedLength})`
                   : '发帖'
                 : debouncedLength > 0
-                ? `回复(${debouncedLength})`
-                : '回复'}
+                  ? `回复(${debouncedLength})`
+                  : '回复'}
             </Button>
           </DialogFooter>
         </form>

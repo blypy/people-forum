@@ -86,10 +86,18 @@ export interface Favorites {
   postId?: number
 }
 
-//注册提交的数据
-export interface AuthData {
+//登录提交的数据
+export interface LoginData {
   email: string
   password: string
+}
+
+//注册提交的数据
+export interface RegisterData {
+  email: string
+  username: string
+  password: string
+  avatar?: string[]
 }
 
 //点赞收藏提交的数据
@@ -112,4 +120,12 @@ export interface PostParams {
   content: string
   images?: string[]
   authorId: number
+}
+
+//修改用户信息提交的数据
+export interface UpdateUserProfileParams {
+  userId: number
+  username?: string
+  bio?: string
+  avatar?: string
 }

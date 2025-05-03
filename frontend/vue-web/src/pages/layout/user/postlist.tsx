@@ -1,5 +1,5 @@
 import { useLoaderData, useParams } from 'react-router'
-import PostCard from '@/components/PostCard' 
+import PostCard from '@/components/PostCard'
 import { useUserPostsByKey } from '@/hooks/useUser'
 
 const PostList = () => {
@@ -7,7 +7,7 @@ const PostList = () => {
   const { id } = useParams()
   const { data } = useUserPostsByKey(key, Number(id))
   const posts = data?.posts || []
-  
+
   return (
     <div>
       {posts.length > 0 ? (

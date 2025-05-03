@@ -2,8 +2,8 @@ import { Loader } from 'lucide-react'
 
 const Loading = () => {
   return (
-    <div className="flex justify-center items-center h-screen">
-      <Loader className="animate-spin size-10" style={{ animationDuration: '2000ms' }} />
+    <div className="flex h-screen items-center justify-center">
+      <Loader className="size-10 animate-spin" style={{ animationDuration: '2000ms' }} />
     </div>
   )
 }
