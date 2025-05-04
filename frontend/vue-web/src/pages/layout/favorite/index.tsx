@@ -1,4 +1,5 @@
 import { getUserFavoritePosts } from '@/api'
+import Loading from '@/components/Loading'
 import PostCard from '@/components/PostCard'
 import { usePosts } from '@/hooks/usePost'
 import { QUERY_TAG } from '@/lib/query'
@@ -6,11 +7,13 @@ import { useUserStore } from '@/stores/useCurrentUserStore'
 
 export default function Favorite() {
   const currentUser = useUserStore(state => state.currentUser)
-  const { posts, loaderRef } = usePosts({
+  const { posts, loaderRef, isLoading } = usePosts({
     queryFn: getUserFavoritePosts,
     queryArgs: currentUser!.id,
     queryKey: QUERY_TAG.USER.FAVORITE
   })
+
+  if (isLoading) return <Loading />
 
   return (
     <>

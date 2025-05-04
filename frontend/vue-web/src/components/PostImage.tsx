@@ -58,7 +58,7 @@ const PostImage = ({ images }: { images?: string[] }) => {
         <div
           className={cn(
             'grid gap-2',
-            images.length === 1 ? 'w-xl grid-cols-1' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
+            images.length === 1 ? 'grid-cols-1 xl:w-xl' : images.length === 2 ? 'grid-cols-2' : 'grid-cols-3'
           )}
         >
           {images?.map((img, index) => (
