@@ -3,6 +3,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { fetchLogout } from '@/api'
 import { toast } from 'sonner'
 import { useUserStore } from '@/stores/useCurrentUserStore'
+import { removeToken } from '@/lib/token'
 
 const DropMenu = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -17,6 +18,7 @@ const DropMenu = ({ children }: { children: React.ReactNode }) => {
             onClick={async () => {
               const res = await fetchLogout()
               useUserStore.getState().clearUser()
+              removeToken()
               toast.success(res.message)
             }}
           >

@@ -1,9 +1,9 @@
-import { Loader } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 
 const Loading = ({ className = 'h-screen' }: { className?: string }) => {
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <Loader className="size-10 animate-spin" style={{ animationDuration: '2000ms' }} />
+      <Loader2 className="size-10 animate-spin" style={{ animationDuration: '2000ms' }} />
     </div>
   )
 }

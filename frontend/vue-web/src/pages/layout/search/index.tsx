@@ -53,7 +53,11 @@ const Search = () => {
       </form>
 
       {query ? (
-        <div>{posts?.map(post => <PostCard post={post} key={post.id} />)}</div>
+        <>
+          <div>{posts?.map(post => <PostCard post={post} key={post.id} />)}</div>
+          {showLoading && <Loading className="h-15" />}
+          <div ref={loaderRef} className="h-px" />
+        </>
       ) : (
         <div className="flex min-h-[80vh] flex-col items-center justify-center text-2xl">
           <p>要搜点什么</p>
@@ -65,8 +69,6 @@ const Search = () => {
           <p>暂无内容</p>
         </div>
       )}
-      {showLoading && <Loading className="h-15" />}
-      <div ref={loaderRef} className="h-px" />
     </div>
   )
 }

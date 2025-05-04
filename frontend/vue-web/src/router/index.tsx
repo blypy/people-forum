@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import { createBrowserRouter } from 'react-router'
 import Loading from '@/components/Loading'
 import { NotFound } from '@/components/NotFound'
-// import { RequireAuth } from '@/components/RequireAuth'
+import { RequireAuth } from '@/components/RequireAuth'
 import { QUERY_TAG } from '@/lib/query'
 import Login from '@/pages/auth/login'
 import Register from '@/pages/auth/register'
@@ -40,17 +40,21 @@ const router = createBrowserRouter([
       {
         path: '/favorite',
         element: (
-          <Suspense fallback={<Loading />}>
-            <Favorite />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loading />}>
+              <Favorite />
+            </Suspense>
+          </RequireAuth>
         )
       },
       {
         path: '/search',
         element: (
-          <Suspense fallback={<Loading />}>
-            <Search />
-          </Suspense>
+          <RequireAuth>
+            <Suspense fallback={<Loading />}>
+              <Search />
+            </Suspense>
+          </RequireAuth>
         )
       },
       {

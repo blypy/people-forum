@@ -1,44 +1,36 @@
-import type { Pagination, PostDetails, PostParams, Posts } from '@/types'
+import { httpClient } from '@/lib/http'
+import type { PostDetails, PostsResponse, PostParams } from '@/types'
 
 //获取帖子数据相关
-export async function getAllPosts(page: number): Promise<{ posts: Posts[]; pagination: Pagination }> {
-  const res = await fetch(`http://localhost:3000/posts?page=${page}`)
-  if (!res.ok) throw new Error('获取全部帖子失败')
-  const data = await res.json()
+export async function getAllPosts(page: number) {
+  const data = await httpClient.get<PostsResponse>('/posts', {
+    params: {
+      page
+    }
+  })
   return data
 }
 
-export async function getPostById(postId: number): Promise<PostDetails> {
-  const res = await fetch(`http://localhost:3000/posts/${postId}`)
-  if (!res.ok) throw new Error('获取帖子详情失败')
-  const data = await res.json()
-  if (!data || data.length === 0) {
-    throw new Error('帖子不存在')
-  }
-  const { post } = data
-  return post
+export async function getPostById(postId: number) {
+  const data = await httpClient.get<{ post: PostDetails }>(`/posts/${postId}`)
+  return data.post
 }
 
-export async function getPostByQuery(page: number, query: string): Promise<{ posts: Posts[]; pagination: Pagination }> {
-  const res = await fetch(`http://localhost:3000/posts/search?q=${query}&page=${page}`)
-  if (!res.ok) throw new Error('搜索帖子失败')
-  const data = await res.json()
+export async function getPostByQuery(page: number, query: string) {
+  const data = await httpClient.get<PostsResponse>('/posts/search', {
+    params: {
+      q: query,
+      page
+    }
+  })
   return data
 }
 
 //创建帖子
-export async function fetchCreatePost(postData: PostParams): Promise<{ msg: string }> {
-  const res = await fetch('http://localhost:3000/posts', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(postData)
+export async function fetchCreatePost(postData: PostParams) {
+  const data = await httpClient.post<{ msg: string }, PostParams>('/posts', {
+    ...postData
   })
-  if (!res.ok) {
-    const errorData = await res.json()
-    throw new Error(errorData.message)
-  }
-  const data = await res.json()
+
   return data
 }

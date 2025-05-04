@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { useUserStore } from '@/stores/useCurrentUserStore'
 import { useUpload } from '@/hooks/useUpload'
 import { Camera, User } from 'lucide-react'
+import { setToken } from '@/lib/token'
 
 const RegisterForm = () => {
   const navigate = useNavigate()
@@ -50,6 +51,7 @@ const RegisterForm = () => {
         loading: '注册中...',
         success: res => {
           useUserStore.getState().setUser(res.user)
+          setToken(res.token)
           navigate('/')
           return '注册成功'
         },

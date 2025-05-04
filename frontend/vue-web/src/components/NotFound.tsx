@@ -1,11 +1,25 @@
 import { Link, useNavigate } from 'react-router'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from './ui/button'
+import { httpClient } from '@/lib/http'
 
 export const NotFound = () => {
+  const testget = async () => {
+    const userId = 1
+    const page = 1
+    const res = await httpClient.get(`/users`, {
+      params: {
+        userId: userId,
+        page: page
+      }
+    })
+    console.log(res)
+  }
+
   return (
     <div className="flex h-screen flex-col items-center justify-center">
       <img src="/NotFound.png" alt="404" className="h-96 w-96 object-contain" />
+      <button onClick={testget}>clickme</button>
       <Link to={'/'} className="text-accent-foreground">
         <Button variant={'link'}>返回主页</Button>
       </Link>

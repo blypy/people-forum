@@ -43,36 +43,45 @@ const CommentForm = forwardRef<
     e.preventDefault()
     if (commentContent.trim().length >= 200) return toast.error('评论最大200字')
 
-    let fileUrl: string[] = []
-    if (images.length > 0) {
-      const uploadResult = await uploadFiles(imageFiles)
-      if (!uploadResult.success) return toast.error(uploadResult.message || '上传图片失败')
-      fileUrl = uploadResult.urls
-    }
-
-    if (type === 'parent') {
-      //提交父评论
-      await createCommentMutation.mutateAsync({
-        content: commentContent,
-        images: fileUrl,
-        userId: currentUser.id,
-        postId
-      })
-      toast.success('评论成功')
-    } else {
-      //提交子评论
-      await createReplyMutation.mutateAsync({
-        content: commentContent,
-        images: fileUrl,
-        userId: currentUser.id,
-        postId,
-        parentId: commentId!
-      })
-      toast.success('回复成功')
-    }
-
-    setCommentContent('')
-    removeImage()
+    toast.promise(
+      async () => {
+        let fileUrl: string[] = []
+        if (images.length > 0) {
+          const uploadResult = await uploadFiles(imageFiles)
+          if (!uploadResult.success) return
+          fileUrl = uploadResult.urls
+        }
+        if (type === 'parent') {
+          //提交父评论
+          await createCommentMutation.mutateAsync({
+            content: commentContent,
+            images: fileUrl,
+            userId: currentUser.id,
+            postId
+          })
+        } else {
+          //提交子评论
+          await createReplyMutation.mutateAsync({
+            content: commentContent,
+            images: fileUrl,
+            userId: currentUser.id,
+            postId,
+            parentId: commentId!
+          })
+        }
+      },
+      {
+        success: () => {
+          setCommentContent('')
+          removeImage()
+          return '回复成功'
+        },
+        error: err => {
+          const msg = err instanceof Error ? err.message : '发布失败'
+          return `回复失败：${msg}`
+        }
+      }
+    )
   }
 
   return (

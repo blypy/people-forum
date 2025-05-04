@@ -1,16 +1,11 @@
-import { Navigate, useLocation } from 'react-router'
-
-function useAuth() {
-  const token = localStorage.getItem('token')
-  return !!token
-}
+import { getToken } from '@/lib/token'
+import { Navigate } from 'react-router'
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
-  const isAuth = useAuth()
-  const location = useLocation()
+  const token = getToken()
 
-  if (!isAuth) {
-    return <Navigate to="/login" state={{ from: location }} replace />
+  if (!token) {
+    return <Navigate to="/login" replace />
   }
 
   return children

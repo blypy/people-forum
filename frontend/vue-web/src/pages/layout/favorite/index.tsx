@@ -7,7 +7,7 @@ import { useUserStore } from '@/stores/useCurrentUserStore'
 
 export default function Favorite() {
   const currentUser = useUserStore(state => state.currentUser)
-  const { posts, loaderRef, isLoading } = usePosts({
+  const { posts, loaderRef, isLoading, showLoading } = usePosts({
     queryFn: getUserFavoritePosts,
     queryArgs: currentUser!.id,
     queryKey: QUERY_TAG.USER.FAVORITE
@@ -18,13 +18,16 @@ export default function Favorite() {
   return (
     <>
       {posts.length > 0 ? (
-        <div>{posts?.map(post => <PostCard post={post} key={post.id} />)}</div>
+        <>
+          <div>{posts?.map(post => <PostCard post={post} key={post.id} />)}</div>
+          {showLoading && <Loading className="h-15" />}
+          <div ref={loaderRef} className="h-px" />
+        </>
       ) : (
         <div className="flex h-screen flex-col items-center justify-center text-2xl">
           <p>还没收藏过帖子</p>
         </div>
       )}
-      <div ref={loaderRef} className="h-px" />
     </>
   )
 }

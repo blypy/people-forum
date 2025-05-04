@@ -1,3 +1,5 @@
+import { httpClient } from '@/lib/http'
+
 export * from './post'
 export * from './user'
 export * from './auth'
@@ -10,9 +12,6 @@ interface FileResponse {
 }
 
 export async function uploadImage(formdata: FormData): Promise<FileResponse> {
-  const res = await fetch('http://localhost:3000/upload', {
-    method: 'POST',
-    body: formdata
-  })
-  return await res.json()
+  const data = await httpClient.upload<FileResponse>('/upload', formdata)
+  return data
 }

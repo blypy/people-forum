@@ -22,11 +22,6 @@ export const useUpload = (): UseUploadHookResult => {
     })
 
     const res = await uploadImage(formData)
-
-    if (!res.success) {
-      return { success: false, urls: [], message: res.message }
-    }
-
     const urls = res.files.map(file => file.url)
     return { success: true, urls: urls, message: null }
   }

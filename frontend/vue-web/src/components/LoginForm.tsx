@@ -5,6 +5,7 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { fetchLogin } from '@/api/auth'
 import { useUserStore } from '@/stores/useCurrentUserStore'
+import { setToken } from '@/lib/token'
 
 const AuthForm = () => {
   const [loading, setLoading] = useState(false)
@@ -28,6 +29,7 @@ const AuthForm = () => {
         loading: '登录中...',
         success: res => {
           useUserStore.getState().setUser(res.user)
+          setToken(res.token)
           navigate('/')
           return '登录成功'
         },

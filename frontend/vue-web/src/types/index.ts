@@ -137,3 +137,9 @@ export interface UpdateUserProfileParams {
   bio?: string
   avatar?: string
 }
+
+// 帖子的响应类型
+export interface PostsResponse {
+  posts: Posts[]
+  pagination: Pagination
+}

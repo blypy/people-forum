@@ -50,16 +50,16 @@ const Posting = ({
       toast.error('内容最多200字')
       return
     }
-    let fileUrl: string[] = []
-    if (images.length > 0) {
-      const uploadResult = await uploadFiles(imageFiles)
-      if (!uploadResult.success) return toast.error(uploadResult.message || '上传图片失败')
-      fileUrl = uploadResult.urls
-    }
 
     toast.promise(
       async () => {
+        let fileUrl: string[] = []
         let msg = ''
+        if (images.length > 0) {
+          const uploadResult = await uploadFiles(imageFiles)
+          if (!uploadResult.success) return
+          fileUrl = uploadResult.urls
+        }
         if (mode === 'post') {
           await createPostMutation.mutateAsync({ content, images: fileUrl, authorId: currentUser!.id })
           msg = '发布成功'
@@ -77,17 +77,18 @@ const Posting = ({
       },
       {
         loading: '发布中...',
-        success: msg => msg,
+        success: msg => {
+          setContent('')
+          removeImage()
+          setOpen(false)
+          return msg
+        },
         error: err => {
           const msg = err instanceof Error ? err.message : '发布失败'
           return mode === 'post' ? `发布失败：${msg}` : `评论失败：${msg}`
         }
       }
     )
-
-    setOpen(false)
-    setContent('')
-    removeImage()
   }
 
   return (

@@ -1,4 +1,4 @@
-// 登录注册
+import { httpClient } from '@/lib/http'
 import type { User, LoginData, RegisterData } from '@/types'
 
 interface AuthResponse {
@@ -8,55 +8,26 @@ interface AuthResponse {
   token: string
 }
 
+// 登录注册
 // 注册API
-export async function fetchRegister(data: RegisterData): Promise<AuthResponse> {
-  const res = await fetch('http://localhost:3000/auth/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
+export async function fetchRegister(registerData: RegisterData) {
+  const data = await httpClient.post<AuthResponse, RegisterData>('/auth/register', {
+    ...registerData
   })
 
-  if (!res.ok) {
-    const errorData = await res.json()
-    throw new Error(errorData.message)
-  }
-  return await res.json()
+  return data
 }
 
 // 登录API
-export async function fetchLogin(data: LoginData): Promise<AuthResponse> {
-  const res = await fetch('http://localhost:3000/auth/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
+export async function fetchLogin(loginData: LoginData) {
+  const data = await httpClient.post<AuthResponse, LoginData>('/auth/login', {
+    ...loginData
   })
-
-  if (!res.ok) {
-    const errorData = await res.json()
-    throw new Error(errorData.message)
-  }
-
-  return await res.json()
+  return data
 }
 
 //退出登录
-export async function fetchLogout(): Promise<{ success: boolean; message: string }> {
-  const res = await fetch('http://localhost:3000/auth/logout', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
-  if (!res.ok) {
-    const errorData = await res.json()
-    throw new Error(errorData.messag)
-  }
-
-  const data = await res.json()
-
+export async function fetchLogout() {
+  const data = await httpClient.post<{ success: boolean; message: string }>('/auth/logout')
   return data
 }

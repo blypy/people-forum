@@ -64,7 +64,7 @@ export function usePosts<T extends string | number | undefined = undefined>({
           setShowLoading(true)
           setTimeout(() => {
             fetchNextPage()
-          }, 1500)
+          }, 1000)
         }
       },
       {

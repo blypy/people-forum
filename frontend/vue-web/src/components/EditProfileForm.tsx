@@ -29,14 +29,14 @@ export default function EditProfileForm({ user, onSubmitSuccess }: { user: UserT
 
     let avatarUrl = user.avatar
 
-    if (images.length > 0) {
-      const uploadResult = await uploadFiles(imageFiles)
-      if (!uploadResult.success) return toast.error(uploadResult.message || '头像上传失败')
-      avatarUrl = uploadResult.urls[0]
-    }
-
     toast.promise(
       async () => {
+        if (images.length > 0) {
+          const uploadResult = await uploadFiles(imageFiles)
+          if (!uploadResult.success) return
+          avatarUrl = uploadResult.urls[0]
+        }
+
         return await updateProfileMutation.mutateAsync({
           userId: user.id,
           username: username.trim(),
@@ -47,7 +47,7 @@ export default function EditProfileForm({ user, onSubmitSuccess }: { user: UserT
       {
         loading: '更新个人信息中...',
         success: res => {
-          useUserStore.getState().setUser(res.user)
+          useUserStore.getState().setUser(res!.user)
           onSubmitSuccess?.()
           return '更新个人信息成功'
         },
@@ -60,74 +60,64 @@ export default function EditProfileForm({ user, onSubmitSuccess }: { user: UserT
   }
 
   return (
-    <>
-      <button
-        onClick={() => {
-          console.log(user)
-        }}
-        type="button"
-      >
-        click
-      </button>
-      <form onSubmit={handleSubmit} className="grid gap-6 py-4" id="edit-profile-form">
-        <div className="mx-auto mb-2 text-center">
-          <div className="relative mx-auto h-24 w-24">
-            <div className="group border-border relative h-full w-full overflow-hidden rounded-full border">
-              {avatarPreview ? (
-                <img
-                  src={avatarPreview}
-                  alt="头像预览"
-                  className="h-full w-full object-cover transition-all group-hover:opacity-80"
-                />
-              ) : (
-                <div className="bg-muted flex h-full w-full items-center justify-center">
-                  <User className="text-muted-foreground h-12 w-12" />
-                </div>
-              )}
-              <button
-                type="button"
-                onClick={() => {
-                  removeImage()
-                  imgRef.current?.click()
-                }}
-                className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
-              >
-                <Camera className="h-6 w-6 text-white" />
-              </button>
-            </div>
-            <input ref={imgRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+    <form onSubmit={handleSubmit} className="grid gap-6 py-4" id="edit-profile-form">
+      <div className="mx-auto mb-2 text-center">
+        <div className="relative mx-auto h-24 w-24">
+          <div className="group border-border relative h-full w-full overflow-hidden rounded-full border">
+            {avatarPreview ? (
+              <img
+                src={avatarPreview}
+                alt="头像预览"
+                className="h-full w-full object-cover transition-all group-hover:opacity-80"
+              />
+            ) : (
+              <div className="bg-muted flex h-full w-full items-center justify-center">
+                <User className="text-muted-foreground h-12 w-12" />
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                removeImage()
+                imgRef.current?.click()
+              }}
+              className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
+            >
+              <Camera className="h-6 w-6 text-white" />
+            </button>
           </div>
+          <input ref={imgRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
         </div>
+      </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">
-            用户名
-            <Input
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              className="mt-2 w-full"
-              placeholder="请输入用户名"
-              maxLength={9}
-            />
-          </label>
-        </div>
+      <div className="space-y-2">
+        <label className="text-sm font-medium">
+          用户名
+          <Input
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            className="mt-2 w-full"
+            placeholder="请输入用户名"
+            maxLength={9}
+          />
+        </label>
+      </div>
 
-        {/* 简介输入 */}
-        <div className="space-y-2">
-          <label className="text-sm">
-            简介
-            <textarea
-              value={bio}
-              onChange={e => setBio(e.target.value)}
-              className="bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 border-border mt-2 w-full resize-none rounded-md border px-3 py-2 text-sm transition-[color,box-shadow] focus-visible:ring-[1px]"
-              placeholder="介绍一下自己吧"
-              rows={3}
-              maxLength={50}
-            />
-          </label>
-          <div className="text-muted-foreground text-right text-xs">{bioLength}/50</div>
-        </div>
-      </form>
-    </>
+      {/* 简介输入 */}
+      <div className="space-y-2">
+        <label className="text-sm">
+          简介
+          <textarea
+            value={bio}
+            onChange={e => setBio(e.target.value)}
+            className="bg-background placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 border-border mt-2 w-full resize-none rounded-md border px-3 py-2 text-sm transition-[color,box-shadow] focus-visible:ring-[1px]"
+            placeholder="介绍一下自己吧"
+            rows={3}
+            maxLength={50}
+          />
+        </label>
+        <div className="text-muted-foreground text-right text-xs">{bioLength}/50</div>
+      </div>
+    </form>
   )
 }

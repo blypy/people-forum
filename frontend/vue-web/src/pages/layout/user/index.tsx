@@ -1,5 +1,5 @@
 import { memo, useState } from 'react'
-import { Link, useParams, useNavigate } from 'react-router'
+import { Link, useParams, useNavigate, Navigate } from 'react-router'
 import { Outlet } from 'react-router'
 import { ArrowLeft as arrow, Calendar as time } from 'lucide-react'
 import Loading from '@/components/Loading'
@@ -124,7 +124,7 @@ const ActiveTabBar = () => {
 export default function User() {
   const { id } = useParams() //userid
   const { data: user, isError, isLoading } = useUserById(Number(id))
-  // 用户不存在
+  if (id === 'undefined') return <Navigate to="/login" replace />
   if (isLoading) return <Loading />
   if (isError || !user) return <ItemNotFound type="user" />
 
