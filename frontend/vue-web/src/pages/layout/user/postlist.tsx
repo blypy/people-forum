@@ -3,11 +3,12 @@ import PostCard from '@/components/PostCard'
 import { usePosts } from '@/hooks/usePost'
 import { getUserLikedPosts, getUserPosts } from '@/api'
 import { QUERY_TAG } from '@/lib/query'
+import Loading from '@/components/Loading'
 
 const PostList = () => {
   const key = useLoaderData()
   const { id } = useParams()
-  const { posts, loaderRef } = usePosts({
+  const { posts, loaderRef, showLoading } = usePosts({
     queryFn: key === QUERY_TAG.USER.POST ? getUserPosts : getUserLikedPosts,
     queryKey: key,
     queryArgs: Number(id)
@@ -26,6 +27,7 @@ const PostList = () => {
           <p>暂无内容</p>
         </div>
       )}
+      {showLoading && <Loading className="h-15" />}
       <div ref={loaderRef}></div>
     </div>
   )

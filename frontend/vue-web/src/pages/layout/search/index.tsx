@@ -6,6 +6,7 @@ import PostCard from '@/components/PostCard'
 import { usePosts } from '@/hooks/usePost'
 import { getPostByQuery } from '@/api'
 import { QUERY_TAG } from '@/lib/query'
+import Loading from '@/components/Loading'
 
 const SearchIcon = memo(Icon)
 
@@ -13,7 +14,11 @@ const Search = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const query = searchParams.get('q') || ''
-  const { posts, loaderRef } = usePosts({ queryFn: getPostByQuery, queryArgs: query, queryKey: QUERY_TAG.POST.QUERY })
+  const { posts, loaderRef, showLoading } = usePosts({
+    queryFn: getPostByQuery,
+    queryArgs: query,
+    queryKey: QUERY_TAG.POST.QUERY
+  })
 
   const handleSubmit = async (formData: FormData) => {
     const content = formData.get('content')
@@ -60,6 +65,7 @@ const Search = () => {
           <p>暂无内容</p>
         </div>
       )}
+      {showLoading && <Loading className="h-15" />}
       <div ref={loaderRef} className="h-px" />
     </div>
   )

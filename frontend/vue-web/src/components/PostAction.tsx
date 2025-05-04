@@ -99,7 +99,7 @@ const PostAction = ({ postId, comments, likes, favorites }: PostActionProps) => 
         variant={'ghost'}
         size={'icon'}
         onClick={() => {
-          navigator.clipboard.writeText(window.location.href)
+          navigator.clipboard.writeText(`http://localhost:5173/post/${postId}`)
           toast.success('链接已复制到剪贴板')
         }}
       >
