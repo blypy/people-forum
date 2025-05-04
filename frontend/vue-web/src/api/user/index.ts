@@ -1,4 +1,4 @@
-import type { MarkPostParams, Posts, UpdateUserProfileParams, User } from '@/types'
+import type { MarkPostParams, Pagination, Posts, UpdateUserProfileParams, User } from '@/types'
 
 //获取数据相关
 export async function getUserById(userId: number): Promise<User> {
@@ -11,22 +11,28 @@ export async function getUserById(userId: number): Promise<User> {
   return data
 }
 
-export async function getUserPosts(userId: number): Promise<{ posts: Posts[] }> {
-  const res = await fetch(`http://localhost:3000/users/${userId}/posts`)
+export async function getUserPosts(page: number, userId: number): Promise<{ posts: Posts[]; pagination: Pagination }> {
+  const res = await fetch(`http://localhost:3000/users/${userId}/posts?page=${page}`)
   if (!res.ok) throw new Error('获取用户文章失败')
   const data = await res.json()
   return data
 }
 
-export async function getUserFavoritePosts(userId: number): Promise<{ posts: Posts[] }> {
-  const res = await fetch(`http://localhost:3000/users/${userId}/favorites`)
+export async function getUserFavoritePosts(
+  page: number,
+  userId: number
+): Promise<{ posts: Posts[]; pagination: Pagination }> {
+  const res = await fetch(`http://localhost:3000/users/${userId}/favorites?page=${page}`)
   if (!res.ok) throw new Error('获取用户收藏文章失败')
   const data = await res.json()
   return data
 }
 
-export async function getUserLikedPosts(userId: number): Promise<{ posts: Posts[] }> {
-  const res = await fetch(`http://localhost:3000/users/${userId}/likes`)
+export async function getUserLikedPosts(
+  page: number,
+  userId: number
+): Promise<{ posts: Posts[]; pagination: Pagination }> {
+  const res = await fetch(`http://localhost:3000/users/${userId}/likes?page=${page}`)
   if (!res.ok) throw new Error('获取用户点赞文章失败')
   const data = await res.json()
   return data

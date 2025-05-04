@@ -1,8 +1,8 @@
-import type { PostDetails, PostParams, Posts } from '@/types'
+import type { Pagination, PostDetails, PostParams, Posts } from '@/types'
 
 //获取帖子数据相关
-export async function getAllPosts(): Promise<{ posts: Posts[] }> {
-  const res = await fetch('http://localhost:3000/posts')
+export async function getAllPosts(page: number): Promise<{ posts: Posts[]; pagination: Pagination }> {
+  const res = await fetch(`http://localhost:3000/posts?page=${page}`)
   if (!res.ok) throw new Error('获取全部帖子失败')
   const data = await res.json()
   return data
@@ -19,11 +19,11 @@ export async function getPostById(postId: number): Promise<PostDetails> {
   return post
 }
 
-export async function getPostByQuery(query: string): Promise<Posts[]> {
-  const res = await fetch(`http://localhost:3000/posts/search?q=${query}`)
+export async function getPostByQuery(page: number, query: string): Promise<{ posts: Posts[]; pagination: Pagination }> {
+  const res = await fetch(`http://localhost:3000/posts/search?q=${query}&page=${page}`)
   if (!res.ok) throw new Error('搜索帖子失败')
-  const { posts } = await res.json()
-  return posts ?? []
+  const data = await res.json()
+  return data
 }
 
 //创建帖子

@@ -1,12 +1,17 @@
 import { useLoaderData, useParams } from 'react-router'
 import PostCard from '@/components/PostCard'
-import { useUserPostsByKey } from '@/hooks/useUser'
+import { usePosts } from '@/hooks/usePost'
+import { getUserLikedPosts, getUserPosts } from '@/api'
+import { QUERY_TAG } from '@/lib/query'
 
 const PostList = () => {
   const key = useLoaderData()
   const { id } = useParams()
-  const { data } = useUserPostsByKey(key, Number(id))
-  const posts = data?.posts || []
+  const { posts, loaderRef } = usePosts({
+    queryFn: key === QUERY_TAG.USER.POST ? getUserPosts : getUserLikedPosts,
+    queryKey: key,
+    queryArgs: Number(id)
+  })
 
   return (
     <div>
@@ -17,10 +22,11 @@ const PostList = () => {
           ))}
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center min-h-[32vh] text-2xl">
+        <div className="flex min-h-[32vh] flex-col items-center justify-center text-2xl">
           <p>暂无内容</p>
         </div>
       )}
+      <div ref={loaderRef}></div>
     </div>
   )
 }

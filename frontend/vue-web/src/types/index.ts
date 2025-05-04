@@ -86,6 +86,14 @@ export interface Favorites {
   postId?: number
 }
 
+//分页信息
+export interface Pagination {
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+}
+
 //登录提交的数据
 export interface LoginData {
   email: string

@@ -1,11 +1,16 @@
+import { getUserFavoritePosts } from '@/api'
 import PostCard from '@/components/PostCard'
-import { useUserFavoritePosts } from '@/hooks/useUser'
+import { usePosts } from '@/hooks/usePost'
+import { QUERY_TAG } from '@/lib/query'
 import { useUserStore } from '@/stores/useCurrentUserStore'
 
 export default function Favorite() {
   const currentUser = useUserStore(state => state.currentUser)
-  const { data } = useUserFavoritePosts(currentUser?.id ?? 0)
-  const posts = data?.posts || []
+  const { posts, loaderRef } = usePosts({
+    queryFn: getUserFavoritePosts,
+    queryArgs: currentUser!.id,
+    queryKey: QUERY_TAG.USER.FAVORITE
+  })
 
   return (
     <>
@@ -16,6 +21,7 @@ export default function Favorite() {
           <p>还没收藏过帖子</p>
         </div>
       )}
+      <div ref={loaderRef} className="h-px" />
     </>
   )
 }

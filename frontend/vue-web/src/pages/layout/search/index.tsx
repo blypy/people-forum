@@ -3,7 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router'
 import { Search as Icon } from 'lucide-react'
 import { toast } from 'sonner'
 import PostCard from '@/components/PostCard'
-import { useQueryPost } from '@/hooks/usePost'
+import { usePosts } from '@/hooks/usePost'
+import { getPostByQuery } from '@/api'
+import { QUERY_TAG } from '@/lib/query'
 
 const SearchIcon = memo(Icon)
 
@@ -11,7 +13,7 @@ const Search = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const query = searchParams.get('q') || ''
-  const { data: posts } = useQueryPost(query)
+  const { posts, loaderRef } = usePosts({ queryFn: getPostByQuery, queryArgs: query, queryKey: QUERY_TAG.POST.QUERY })
 
   const handleSubmit = async (formData: FormData) => {
     const content = formData.get('content')
@@ -58,6 +60,7 @@ const Search = () => {
           <p>暂无内容</p>
         </div>
       )}
+      <div ref={loaderRef} className="h-px" />
     </div>
   )
 }
