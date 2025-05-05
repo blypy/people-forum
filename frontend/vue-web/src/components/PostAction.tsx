@@ -33,17 +33,27 @@ const PostAction = ({ postId, comments, likes, favorites }: PostActionProps) => 
       return
     }
 
-    throttle(() => {
-      if (!isLiked) {
-        markPostMutation.mutate({ userId: currentUser.id, postId: postId, type: 'like' })
-      } else {
-        unMarkPostMutation.mutate({ userId: currentUser.id, postId: postId, type: 'like' })
-      }
+    throttle(async () => {
+      try {
+        if (!isLiked) {
+          await markPostMutation.mutateAsync({ userId: currentUser.id, postId: postId, type: 'like' })
+          console.log(markPostMutation.error)
 
-      //更新本地喜欢
-      const newLikedState = !isLiked
-      setIsLiked(newLikedState)
-      setLikesCount(prev => (newLikedState ? prev + 1 : prev - 1))
+          if (markPostMutation.error) {
+            toast.error(markPostMutation.error.message)
+          }
+        } else {
+          await unMarkPostMutation.mutateAsync({ userId: currentUser.id, postId: postId, type: 'like' })
+        }
+
+        //更新本地喜欢
+        const newLikedState = !isLiked
+        setIsLiked(newLikedState)
+        setLikesCount(prev => (newLikedState ? prev + 1 : prev - 1))
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : String(err)
+        toast.error(`点赞失败：${errorMessage}`)
+      }
     })
   }
 
@@ -54,17 +64,22 @@ const PostAction = ({ postId, comments, likes, favorites }: PostActionProps) => 
       return
     }
 
-    throttle(() => {
-      if (!isFavorited) {
-        markPostMutation.mutate({ userId: currentUser.id, postId: postId, type: 'favorite' })
-      } else {
-        unMarkPostMutation.mutate({ userId: currentUser.id, postId: postId, type: 'favorite' })
-      }
+    throttle(async () => {
+      try {
+        if (!isFavorited) {
+          await markPostMutation.mutateAsync({ userId: currentUser.id, postId: postId, type: 'favorite' })
+        } else {
+          await unMarkPostMutation.mutateAsync({ userId: currentUser.id, postId: postId, type: 'favorite' })
+        }
 
-      // 更新本地收藏
-      const newFavoritedState = !isFavorited
-      setIsFavorited(newFavoritedState)
-      setFavoritesCount(prev => (newFavoritedState ? prev + 1 : prev - 1))
+        // 更新本地收藏
+        const newFavoritedState = !isFavorited
+        setIsFavorited(newFavoritedState)
+        setFavoritesCount(prev => (newFavoritedState ? prev + 1 : prev - 1))
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : String(err)
+        toast.error(`收藏失败：${errorMessage}`)
+      }
     })
   }
 

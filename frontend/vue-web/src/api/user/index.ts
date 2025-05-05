@@ -5,7 +5,15 @@ import type { MarkPostParams, PostsResponse, UpdateUserProfileParams, User } fro
 
 //获取用户信息
 export async function getUserById(userId: number) {
-  const data = await httpClient.get<User>(`/users/${userId}`)
+  const data = await httpClient.get<User>(`/users/${userId}`, {})
+  return data
+}
+
+//获取当前登录用户信息
+export async function getCurrentUser() {
+  const data = await httpClient.get<{ user: User }>('/users/me', {
+    needToken: true
+  })
   return data
 }
 
@@ -47,16 +55,23 @@ export async function fetchUpdateUserProfile(profileData: UpdateUserProfileParam
 //更新操作相关
 //点赞或收藏帖子
 export async function markPost(PostData: MarkPostParams) {
-  await httpClient.post<{ msg: string }, { postId: number; userId: number }>(`/interactions/${PostData.type}`, {
-    postId: PostData.postId,
-    userId: PostData.userId
-  })
+  const data = await httpClient.post<{ success: boolean; message: string }, { postId: number; userId: number }>(
+    `/interactions/${PostData.type}`,
+    {
+      postId: PostData.postId,
+      userId: PostData.userId
+    }
+  )
+  return data
 }
 
 //取消点赞或收藏帖子
 export async function unMarkPost(PostData: MarkPostParams) {
-  await httpClient.delete<{ msg: string }, { postId: number; userId: number }>(`/interactions/${PostData.type}`, {
-    postId: PostData.postId,
-    userId: PostData.userId
-  })
+  await httpClient.delete<{ success: boolean; message: string }, { postId: number; userId: number }>(
+    `/interactions/${PostData.type}`,
+    {
+      postId: PostData.postId,
+      userId: PostData.userId
+    }
+  )
 }

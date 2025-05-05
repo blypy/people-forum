@@ -50,8 +50,8 @@ const RegisterForm = () => {
       {
         loading: '注册中...',
         success: res => {
-          useUserStore.getState().setUser(res.user)
           setToken(res.token)
+          useUserStore.getState().setUser()
           navigate('/')
           return '注册成功'
         },
@@ -69,7 +69,7 @@ const RegisterForm = () => {
       case 1:
         if (!formData.email || !formData.password) return toast.error('请输入邮箱和密码')
         if (!regex.emailRegex.test(formData.email)) return toast.error('请输入正确的邮箱')
-        if (!regex.passwordRegex.test(formData.password)) return toast.error('密码长度至少6位，必须包含字母和数字')
+        if (!regex.passwordRegex.test(formData.password)) return toast.error('密码长度6-20位，必须包含字母和数字')
         break
       case 2:
         if (!formData.username) return toast.error('请输入用户名')

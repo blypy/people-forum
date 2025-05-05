@@ -27,9 +27,9 @@ const AuthForm = () => {
       },
       {
         loading: '登录中...',
-        success: res => {
-          useUserStore.getState().setUser(res.user)
+        success: async res => {
           setToken(res.token)
+          useUserStore.getState().setUser()
           navigate('/')
           return '登录成功'
         },

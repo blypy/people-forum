@@ -14,8 +14,6 @@ interface RequestConfig extends RequestInit {
 async function parseResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const errorData = await response.json()
-    console.log(errorData)
-
     throw new Error(errorData.message || `请求失败: ${response.status}`)
   }
   return (await response.json()) as T

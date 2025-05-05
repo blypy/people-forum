@@ -19,7 +19,7 @@ const PostCard = ({ post }: { post: Posts }) => {
             {/* 用户信息及时间 */}
             <div className="flex items-center gap-1">
               <span className="font-bold">{author.username}</span>
-              <span>{`@${author.handle}`}</span>
+              <span>{author.handle}</span>
               <span>·</span>
               <span>{formatDate(createdAt)}</span>
             </div>

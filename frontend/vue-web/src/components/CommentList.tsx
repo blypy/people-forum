@@ -7,8 +7,10 @@ import UserAvatar from './UserAvatar'
 import { Button } from './ui/button'
 import { formatDate } from '@/lib/utils'
 import { Comments } from '@/types'
+import { useUserStore } from '@/stores/useCurrentUserStore'
 
 const CommentList = ({ comment }: { comment: Comments }) => {
+  const currentUser = useUserStore(state => state.currentUser)
   const [showReplies, setShowReplies] = useState(false) //显示子评论状态
   const [showReplyInput, setShowReplyInput] = useState(false) //控制评论回复框显示状态
   const commentFormRef = useRef<{ focus: () => void }>(null) //评论表单ref
@@ -49,8 +51,12 @@ const CommentList = ({ comment }: { comment: Comments }) => {
                 }, 1)
               }}
             >
-              <MessageSquareMore className="size-4" />
-              <span className="text-xs">回复</span>
+              {currentUser && (
+                <>
+                  <MessageSquareMore className="size-4" />
+                  <span className="text-xs">回复</span>
+                </>
+              )}
             </Button>
 
             {/* 检查是否存在子评论 */}
@@ -61,7 +67,7 @@ const CommentList = ({ comment }: { comment: Comments }) => {
                 className="text-muted-foreground hover:text-primary h-auto rounded-full p-0"
                 onClick={() => setShowReplies(!showReplies)}
               >
-                <span className="flex items-center text-xs">
+                <span className={`flex items-center text-xs ${!currentUser && '-ml-3.5'}`}>
                   {showReplies ? (
                     <>
                       <ChevronUp className="mr-1 size-4" />
@@ -118,8 +124,12 @@ const CommentList = ({ comment }: { comment: Comments }) => {
                         commentFormRef.current?.focus()
                       }}
                     >
-                      <MessageSquareMore className="size-3" />
-                      <span className="text-xs">回复</span>
+                      {currentUser && (
+                        <>
+                          <MessageSquareMore className="size-3" />
+                          <span className="text-xs">回复</span>
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>

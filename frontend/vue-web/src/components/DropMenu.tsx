@@ -1,4 +1,4 @@
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
 import { fetchLogout } from '@/api'
 import { toast } from 'sonner'
@@ -6,6 +6,7 @@ import { useUserStore } from '@/stores/useCurrentUserStore'
 import { removeToken } from '@/lib/token'
 
 const DropMenu = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate()
   return (
     <div className="mt-auto">
       <DropdownMenu>
@@ -17,8 +18,9 @@ const DropMenu = ({ children }: { children: React.ReactNode }) => {
           <DropdownMenuItem
             onClick={async () => {
               const res = await fetchLogout()
-              useUserStore.getState().clearUser()
               removeToken()
+              useUserStore.getState().clearUser()
+              navigate('/')
               toast.success(res.message)
             }}
           >
