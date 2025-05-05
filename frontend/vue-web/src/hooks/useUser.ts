@@ -27,12 +27,20 @@ export function useUpdateUserProfile() {
 //给帖子点赞/收藏
 export function useMarkPost() {
   return useMutation({
-    mutationFn: (PostData: MarkPostParams) => markPost(PostData)
+    mutationFn: (PostData: MarkPostParams) => markPost(PostData),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_TAG.POST.DETAIL, variables.postId] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_TAG.POST.ALL] })
+    }
   })
 }
 
 export function useUnMarkPost() {
   return useMutation({
-    mutationFn: (PostData: MarkPostParams) => unMarkPost(PostData)
+    mutationFn: (PostData: MarkPostParams) => unMarkPost(PostData),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_TAG.POST.DETAIL, variables.postId] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_TAG.POST.ALL] })
+    }
   })
 }

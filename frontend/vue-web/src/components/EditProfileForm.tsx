@@ -7,6 +7,7 @@ import { useUpdateUserProfile } from '@/hooks/useUser'
 import { toast } from 'sonner'
 import type { User as UserType } from '@/types'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useUserStore } from '@/stores/useCurrentUserStore'
 
 export default function EditProfileForm({ user, onSubmitSuccess }: { user: UserType; onSubmitSuccess?: () => void }) {
   const [username, setUsername] = useState(user.username || '')
@@ -46,6 +47,7 @@ export default function EditProfileForm({ user, onSubmitSuccess }: { user: UserT
       {
         loading: '更新个人信息中...',
         success: () => {
+          useUserStore.getState().setUser()
           onSubmitSuccess?.()
           return '更新个人信息成功'
         },
