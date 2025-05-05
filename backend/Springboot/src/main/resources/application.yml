@@ -9,6 +9,13 @@ spring:
     username: root
     password: 121333
     url: jdbc:mysql://localhost:3306/python_forum?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  sql:
+    init:
+      mode: always
 
 #配置Mybatis和xml映射
 mybatis:
