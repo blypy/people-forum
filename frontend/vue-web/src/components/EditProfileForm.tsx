@@ -22,10 +22,7 @@ export default function EditProfileForm({ user, onSubmitSuccess }: { user: UserT
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!username.trim()) {
-      toast.error('用户名不能为空')
-      return
-    }
+    if (!username.trim()) return toast.error('用户名不能为空')
 
     let avatarUrl = user.avatar
 
@@ -33,7 +30,6 @@ export default function EditProfileForm({ user, onSubmitSuccess }: { user: UserT
       async () => {
         if (images.length > 0) {
           const uploadResult = await uploadFiles(imageFiles)
-          if (!uploadResult.success) return
           avatarUrl = uploadResult.urls[0]
         }
 

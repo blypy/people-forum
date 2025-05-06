@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Heart, MessageSquare, Share, Bookmark } from 'lucide-react'
 import { toast } from 'sonner'
 import Posting from './Posting'
@@ -26,6 +26,16 @@ const PostAction = ({ postId, comments, likes, favorites }: PostActionProps) => 
   const unMarkPostMutation = useUnMarkPost()
   const { throttle, isThrottlingRef } = useThrottle()
 
+  useEffect(() => {
+    setIsLiked(likes.some(like => like.userId === currentUser?.id))
+    setLikesCount(likes.length)
+  }, [likes, currentUser])
+
+  useEffect(() => {
+    setIsFavorited(favorites.some(favorite => favorite.userId === currentUser?.id))
+    setFavoritesCount(favorites.length)
+  }, [favorites, currentUser])
+
   // 点赞逻辑
   const handleLike = () => {
     if (!currentUser) {
@@ -37,8 +47,6 @@ const PostAction = ({ postId, comments, likes, favorites }: PostActionProps) => 
       try {
         if (!isLiked) {
           await markPostMutation.mutateAsync({ userId: currentUser.id, postId: postId, type: 'like' })
-          console.log(markPostMutation.error)
-
           if (markPostMutation.error) {
             toast.error(markPostMutation.error.message)
           }
@@ -78,7 +86,7 @@ const PostAction = ({ postId, comments, likes, favorites }: PostActionProps) => 
         setFavoritesCount(prev => (newFavoritedState ? prev + 1 : prev - 1))
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : String(err)
-        toast.error(`收藏失败：${errorMessage}`)
+        toast.error(`点赞失败：${errorMessage}`)
       }
     })
   }

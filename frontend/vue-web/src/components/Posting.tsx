@@ -57,7 +57,6 @@ const Posting = ({
         let msg = ''
         if (images.length > 0) {
           const uploadResult = await uploadFiles(imageFiles)
-          if (!uploadResult.success) return
           fileUrl = uploadResult.urls
         }
         if (mode === 'post') {

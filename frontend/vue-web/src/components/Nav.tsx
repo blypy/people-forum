@@ -81,7 +81,7 @@ const Nav = () => {
       {/* logo */}
       <Link to={'/'}>
         <h1>
-          <img src="/X.png" alt="logo" className="-ml-1 size-15 object-cover xl:-ml-2" />
+          <img src="/icon.png" alt="logo" className="size-15 object-cover" />
         </h1>
       </Link>
 
