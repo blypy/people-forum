@@ -1,0 +1,15 @@
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/mapper/UserMapper.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/mapper/PostMapper.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/model/Post.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/service/ReplyService.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/service/PostService.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/controller/UserController.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/SpringbootApplication.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/mapper/ReplyMapper.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/model/Reply.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/controller/PostController.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/config/SecurityConfig.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/DemoApplication.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/controller/ReplyController.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/model/User.java
+/home/AHNotT/Documents/people-forum/backend/Springboot/src/main/java/com/forum/service/UserService.java

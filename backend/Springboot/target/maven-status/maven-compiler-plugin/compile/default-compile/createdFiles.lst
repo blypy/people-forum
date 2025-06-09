@@ -1,0 +1,15 @@
+com/forum/mapper/UserMapper.class
+com/forum/controller/PostController.class
+com/forum/service/UserService.class
+com/forum/model/User.class
+com/forum/config/SecurityConfig.class
+com/forum/mapper/PostMapper.class
+com/forum/service/PostService.class
+com/forum/controller/ReplyController.class
+com/forum/model/Reply.class
+com/forum/service/ReplyService.class
+com/forum/model/Post.class
+com/forum/mapper/ReplyMapper.class
+com/forum/controller/UserController.class
+com/forum/DemoApplication.class
+com/forum/SpringbootApplication.class
