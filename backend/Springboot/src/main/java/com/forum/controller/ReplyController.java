@@ -21,6 +21,5 @@ public class ReplyController {
                            @RequestParam("content") String content)
     {
         replyService.createReply(postId, userId, content);
-        replyService.createReply(postId, userId, content);
     }
 }
